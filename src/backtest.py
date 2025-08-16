@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('data/btc_usdt.csv', parse_dates=['timestamp'])
+df = pd.read_csv('../data/btc_usdt.csv', parse_dates=['timestamp'])
 
 # Calculate moving averages
 df['SMA_20'] = df['close'].rolling(window=20).mean()
