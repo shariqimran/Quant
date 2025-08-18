@@ -68,4 +68,4 @@ where P = Price, n = Period
 
 - `src/` - Strategy implementations and backtesting scripts
 - `data/` - Historical price data
-- `trade_logs/` - Generated trade logs from backtests
+- `trade_logs/` - Generated trade logs from backtests.
