@@ -64,8 +64,49 @@ where P = Price, n = Period
 
 **Implementation:** `src/backtest.py`
 
+## Web Application
+
+This project includes a **Streamlit web application** that provides an interactive interface for quantitative analysis.
+
+### 🚀 **Quick Start**
+
+1. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Run the web app:**
+   ```bash
+   streamlit run app.py
+   ```
+
+3. **Open your browser** and navigate to `http://localhost:8501`
+
+### 📊 **Web App Features**
+
+- **Real-time data fetching** from Yahoo Finance
+- **Interactive parameter adjustment** with sliders and dropdowns
+- **Multiple analysis tabs:**
+  - Price & Moving Averages
+  - Volatility Analysis with regime detection
+  - RSI Analysis with overbought/oversold signals
+  - Summary Statistics
+  - Data Export
+- **Interactive Plotly charts** with zoom, pan, and hover functionality
+- **Data export capabilities** (CSV download)
+
+### 🎯 **How to Use the Web App**
+
+1. **Enter a symbol** (e.g., AAPL, BTC-USD, TSLA)
+2. **Select interval** and date range
+3. **Adjust parameters** for moving averages and volatility
+4. **Click "Fetch & Analyze Data"**
+5. **Explore different tabs** for various analyses
+
 ## Project Structure
 
 - `src/` - Strategy implementations and backtesting scripts
 - `data/` - Historical price data
-- `trade_logs/` - Generated trade logs from backtests.
+- `trade_logs/` - Generated trade logs from backtests
+- `app.py` - Streamlit web application
+- `requirements.txt` - Python dependencies
