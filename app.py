@@ -5,6 +5,9 @@ import yfinance as yf
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+
+# Import the moving average backtest function
+from src.movingAverage import moving_average_backtest
 from datetime import datetime, timedelta
 import warnings
 warnings.filterwarnings('ignore')
@@ -456,13 +459,65 @@ def main():
                 st.metric("Total Return", f"{price_change:.2f}%")
             
             # Create tabs for different analyses
-            tab1, tab2, tab3, tab4, tab5 = st.tabs([
+            tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
                 "📈 Price & Moving Averages", 
                 "📊 Volatility Analysis", 
                 "🔄 RSI Analysis",
                 "📋 Summary Statistics",
-                "📁 Data Export"
+                "📁 Data Export",
+                "🧪 MA Backtest"
             ])
+            with tab6:
+                st.subheader("Moving Average Crossover Backtest")
+                st.markdown("""
+                This backtest simulates a simple moving average crossover strategy:
+                - **Buy** when the 20-day SMA crosses above the 50-day SMA
+                - **Sell** when the 20-day SMA crosses below the 50-day SMA
+                """)
+                st.info("Uses yfinance data. For best results, use daily interval and a long enough date range.")
+
+                # User input for backtest
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    backtest_symbol = st.text_input("Backtest Symbol", value=symbol, key="ma_backtest_symbol")
+                with col2:
+                    backtest_start = st.date_input("Backtest Start Date", value=start_date, key="ma_backtest_start")
+                with col3:
+                    backtest_end = st.date_input("Backtest End Date", value=end_date, key="ma_backtest_end")
+
+                initial_capital = st.number_input("Initial Capital ($)", min_value=1000, max_value=1000000, value=10000, step=1000, key="ma_backtest_capital")
+
+                if st.button("Run MA Backtest", key="run_ma_backtest"):
+                    with st.spinner("Running backtest..."):
+                        # Filter df for the selected backtest symbol and date range
+                        df_bt = df.copy()
+                        if backtest_symbol != symbol:
+                            # If user changed symbol, fetch new data (optional: you can implement this)
+                            st.warning("Backtest symbol must match loaded data. Please fetch data for the desired symbol first.")
+                            final_value, log_df, fig = None, None, None
+                        else:
+                            # Ensure timestamp and comparison dates are both UTC (timezone-aware)
+                            df_bt['timestamp'] = pd.to_datetime(df_bt['timestamp'], utc=True, errors='coerce')
+                            start_dt = pd.to_datetime(backtest_start)
+                            end_dt = pd.to_datetime(backtest_end)
+                            if start_dt.tzinfo is None:
+                                start_dt = start_dt.tz_localize('UTC')
+                            else:
+                                start_dt = start_dt.tz_convert('UTC')
+                            if end_dt.tzinfo is None:
+                                end_dt = end_dt.tz_localize('UTC')
+                            else:
+                                end_dt = end_dt.tz_convert('UTC')
+                            mask = (df_bt['timestamp'] >= start_dt) & (df_bt['timestamp'] <= end_dt)
+                            df_bt = df_bt.loc[mask].reset_index(drop=True)
+                            final_value, log_df, fig = moving_average_backtest(df_bt, initial_capital=initial_capital, symbol=backtest_symbol)
+                    if final_value is None:
+                        st.error("Backtest failed. Not enough data or invalid symbol/date range.")
+                    else:
+                        st.success(f"Final Portfolio Value: ${final_value:,.2f}")
+                        st.plotly_chart(fig, use_container_width=True)
+                        st.subheader("Trade Log")
+                        st.dataframe(log_df)
             
             with tab1:
                 st.subheader("Price Chart with Moving Averages")
