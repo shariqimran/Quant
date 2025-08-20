@@ -171,3 +171,183 @@ def create_backtest_chart(df, log_df, symbol, initial_capital, final_value):
     )
     
     return fig
+
+def rsi_backtest(df, initial_capital=10000, symbol="UNKNOWN", rsi_period=14, oversold_threshold=30, overbought_threshold=70):
+    """
+    Run an RSI-based backtest
+    
+    Parameters:
+    df: DataFrame with OHLCV data
+    initial_capital: Starting capital
+    symbol: Symbol name for display
+    rsi_period: Period for RSI calculation
+    oversold_threshold: RSI level for buy signal
+    overbought_threshold: RSI level for sell signal
+    
+    Returns:
+    final_value: Final portfolio value
+    log_df: DataFrame with trade log
+    fig: Plotly figure with backtest results
+    """
+    try:
+        # Ensure we have the required columns
+        required_cols = ['timestamp', 'close', 'RSI']
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        if missing_cols:
+            st.error(f"Missing required columns for RSI backtest: {missing_cols}")
+            return None, None, None
+        
+        # Create a copy to avoid modifying original
+        df_bt = df.copy()
+        
+        # Initialize variables
+        capital = initial_capital
+        shares = 0
+        position = 0  # 0: no position, 1: long
+        trades = []
+        
+        # Run backtest
+        for i in range(1, len(df_bt)):
+            current_price = df_bt['close'].iloc[i]
+            current_date = df_bt['timestamp'].iloc[i]
+            current_rsi = df_bt['RSI'].iloc[i]
+            
+            # Skip if RSI is NaN
+            if pd.isna(current_rsi):
+                continue
+            
+            # Check for buy signal (oversold)
+            if current_rsi < oversold_threshold and position == 0:
+                # Buy signal
+                shares = capital / current_price
+                capital = 0
+                position = 1
+                trades.append({
+                    'date': current_date,
+                    'action': 'BUY',
+                    'price': current_price,
+                    'rsi': current_rsi,
+                    'shares': shares,
+                    'capital': capital,
+                    'portfolio_value': shares * current_price
+                })
+            
+            # Check for sell signal (overbought)
+            elif current_rsi > overbought_threshold and position == 1:
+                # Sell signal
+                capital = shares * current_price
+                shares = 0
+                position = 0
+                trades.append({
+                    'date': current_date,
+                    'action': 'SELL',
+                    'price': current_price,
+                    'rsi': current_rsi,
+                    'shares': shares,
+                    'capital': capital,
+                    'portfolio_value': capital
+                })
+        
+        # Calculate final portfolio value
+        if position == 1:
+            final_value = shares * df_bt['close'].iloc[-1]
+        else:
+            final_value = capital
+        
+        # Create trade log DataFrame
+        if trades:
+            log_df = pd.DataFrame(trades)
+        else:
+            log_df = pd.DataFrame(columns=['date', 'action', 'price', 'rsi', 'shares', 'capital', 'portfolio_value'])
+        
+        # Create backtest visualization
+        fig = create_rsi_backtest_chart(df_bt, log_df, symbol, initial_capital, final_value, oversold_threshold, overbought_threshold)
+        
+        return final_value, log_df, fig
+        
+    except Exception as e:
+        st.error(f"Error in RSI backtest: {str(e)}")
+        return None, None, None
+
+def create_rsi_backtest_chart(df, log_df, symbol, initial_capital, final_value, oversold_threshold, overbought_threshold):
+    """Create RSI backtest visualization chart"""
+    fig = make_subplots(
+        rows=3, cols=1,
+        subplot_titles=('Price', 'RSI', 'Portfolio Value'),
+        vertical_spacing=0.1,
+        row_heights=[0.4, 0.3, 0.3]
+    )
+    
+    # Price
+    fig.add_trace(
+        go.Scatter(x=df['timestamp'], y=df['close'],
+                  mode='lines', name='Close Price',
+                  line=dict(color='#1f77b4', width=2)),
+        row=1, col=1
+    )
+    
+    # RSI
+    fig.add_trace(
+        go.Scatter(x=df['timestamp'], y=df['RSI'],
+                  mode='lines', name='RSI',
+                  line=dict(color='#8c564b', width=2)),
+        row=2, col=1
+    )
+    
+    # Add RSI threshold lines
+    fig.add_hline(y=oversold_threshold, line_dash="dash", line_color="green", 
+                  annotation_text=f"Oversold ({oversold_threshold})", row=2, col=1)
+    fig.add_hline(y=overbought_threshold, line_dash="dash", line_color="red", 
+                  annotation_text=f"Overbought ({overbought_threshold})", row=2, col=1)
+    
+    # Add buy/sell signals on price chart
+    if not log_df.empty:
+        buy_signals = log_df[log_df['action'] == 'BUY']
+        sell_signals = log_df[log_df['action'] == 'SELL']
+        
+        if not buy_signals.empty:
+            fig.add_trace(
+                go.Scatter(x=buy_signals['date'], y=buy_signals['price'],
+                          mode='markers', name='Buy Signal',
+                          marker=dict(color='green', size=10, symbol='triangle-up')),
+                row=1, col=1
+            )
+        
+        if not sell_signals.empty:
+            fig.add_trace(
+                go.Scatter(x=sell_signals['date'], y=sell_signals['price'],
+                          mode='markers', name='Sell Signal',
+                          marker=dict(color='red', size=10, symbol='triangle-down')),
+                row=1, col=1
+            )
+    
+    # Portfolio value
+    if not log_df.empty:
+        fig.add_trace(
+            go.Scatter(x=log_df['date'], y=log_df['portfolio_value'],
+                      mode='lines+markers', name='Portfolio Value',
+                      line=dict(color='purple', width=2)),
+            row=3, col=1
+        )
+    
+    # Add initial capital line
+    fig.add_hline(y=initial_capital, line_dash="dash", line_color="gray",
+                  annotation_text=f"Initial Capital: ${initial_capital:,.0f}", row=3, col=1)
+    
+    # Calculate performance metrics
+    total_return = ((final_value - initial_capital) / initial_capital) * 100
+    
+    # Update layout
+    fig.update_layout(
+        title=f'{symbol} - RSI Strategy Backtest<br>'
+              f'Final Value: ${final_value:,.2f} | Return: {total_return:.2f}%',
+        height=800,
+        showlegend=True
+    )
+    
+    # Update y-axes
+    fig.update_yaxes(title_text="Price", row=1, col=1)
+    fig.update_yaxes(title_text="RSI", range=[0, 100], row=2, col=1)
+    fig.update_yaxes(title_text="Portfolio Value", row=3, col=1)
+    
+    return fig

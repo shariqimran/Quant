@@ -74,16 +74,7 @@ def render_sidebar_inputs():
         with col2:
             end_date = st.date_input("End Date", value=datetime.now())
         
-        # Moving average parameters
-        st.header("📈 Moving Averages")
-        short_window = st.slider("Short MA Window", 5, 50, 20)
-        long_window = st.slider("Long MA Window", 20, 200, 100)
-        
-        # Volatility parameters
-        st.header("📊 Volatility Settings")
-        fast_vol_window = st.slider("Fast Vol Window", 10, 50, 20)
-        slow_vol_window = st.slider("Slow Vol Window", 30, 120, 60)
-        return_type = st.selectbox("Return Type", ["log", "arith"])
+
         
         # Fetch data button
         if st.button("🚀 Fetch & Analyze Data", type="primary"):
@@ -93,12 +84,7 @@ def render_sidebar_inputs():
         'symbol': symbol,
         'interval': interval,
         'start_date': start_date,
-        'end_date': end_date,
-        'short_window': short_window,
-        'long_window': long_window,
-        'fast_vol_window': fast_vol_window,
-        'slow_vol_window': slow_vol_window,
-        'return_type': return_type
+        'end_date': end_date
     }
 
 def render_data_summary(df):
@@ -106,16 +92,13 @@ def render_data_summary(df):
     if df is None or df.empty:
         return
     
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("Data Points", len(df))
     with col2:
         st.metric("Date Range", f"{df['timestamp'].min().date()} to {df['timestamp'].max().date()}")
     with col3:
         st.metric("Current Price", f"${df['close'].iloc[-1]:.2f}")
-    with col4:
-        price_change = ((df['close'].iloc[-1] - df['close'].iloc[0]) / df['close'].iloc[0]) * 100
-        st.metric("Total Return", f"{price_change:.2f}%")
 
 def render_welcome_message():
     """Render welcome message when no data is loaded"""
@@ -171,9 +154,20 @@ def render_ma_backtest_ui(symbol, start_date, end_date):
     st.subheader("Moving Average Crossover Backtest")
     st.markdown("""
     This backtest simulates a simple moving average crossover strategy:
-    - **Buy** when the 20-day SMA crosses above the 50-day SMA
-    - **Sell** when the 20-day SMA crosses below the 50-day SMA
+    - **Buy** when the short MA crosses above the long MA
+    - **Sell** when the short MA crosses below the long MA
     """)
+    
+    # Moving average parameters
+    st.header("📈 Moving Averages")
+    col1, col2 = st.columns(2)
+    with col1:
+        short_window = st.slider("Short MA Window", 5, 50, 20)
+    with col2:
+        long_window = st.slider("Long MA Window", 20, 200, 100)
+    
+    # Show current values
+    st.info(f"Current settings: Short MA = {short_window} days, Long MA = {long_window} days")
     st.info("Uses yfinance data. For best results, use daily interval and a long enough date range.")
 
     # User input for backtest
@@ -191,5 +185,71 @@ def render_ma_backtest_ui(symbol, start_date, end_date):
         'backtest_symbol': backtest_symbol,
         'backtest_start': backtest_start,
         'backtest_end': backtest_end,
-        'initial_capital': initial_capital
+        'initial_capital': initial_capital,
+        'short_window': short_window,
+        'long_window': long_window
+    }
+
+def render_volatility_analysis_ui():
+    """Render volatility analysis UI with sliders"""
+    st.subheader("Volatility Analysis")
+    
+    # Volatility parameters
+    st.header("📊 Volatility Settings")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        fast_vol_window = st.slider("Fast Vol Window", 10, 50, 20)
+    with col2:
+        slow_vol_window = st.slider("Slow Vol Window", 30, 120, 60)
+    with col3:
+        return_type = st.selectbox("Return Type", ["log", "arith"])
+    
+    # Show current values
+    st.info(f"Current settings: Fast Vol = {fast_vol_window} days, Slow Vol = {slow_vol_window} days, Return Type = {return_type}")
+    
+    return {
+        'fast_vol_window': fast_vol_window,
+        'slow_vol_window': slow_vol_window,
+        'return_type': return_type
+    }
+
+def render_rsi_backtest_ui(symbol, start_date, end_date):
+    """Render RSI backtest UI"""
+    st.subheader("RSI Strategy Backtest")
+    st.markdown("""
+    This backtest simulates an RSI-based trading strategy:
+    - **Buy** when RSI falls below the oversold threshold
+    - **Sell** when RSI rises above the overbought threshold
+    """)
+    st.info("Uses yfinance data. For best results, use daily interval and a long enough date range.")
+
+    # RSI parameters
+    st.header("🔄 RSI Settings")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        rsi_period = st.slider("RSI Period", 5, 30, 14)
+    with col2:
+        oversold_threshold = st.slider("Oversold Threshold", 10, 40, 30)
+    with col3:
+        overbought_threshold = st.slider("Overbought Threshold", 60, 90, 70)
+
+    # User input for backtest
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        backtest_symbol = st.text_input("Backtest Symbol", value=symbol, key="rsi_backtest_symbol")
+    with col2:
+        backtest_start = st.date_input("Backtest Start Date", value=start_date, key="rsi_backtest_start")
+    with col3:
+        backtest_end = st.date_input("Backtest End Date", value=end_date, key="rsi_backtest_end")
+
+    initial_capital = st.number_input("Initial Capital ($)", min_value=1000, max_value=1000000, value=10000, step=1000, key="rsi_backtest_capital")
+
+    return {
+        'backtest_symbol': backtest_symbol,
+        'backtest_start': backtest_start,
+        'backtest_end': backtest_end,
+        'initial_capital': initial_capital,
+        'rsi_period': rsi_period,
+        'oversold_threshold': oversold_threshold,
+        'overbought_threshold': overbought_threshold
     }

@@ -57,11 +57,11 @@ def get_moving_average_signals(df):
     
     return signals
 
-def get_rsi_signals(df):
+def get_rsi_signals(df, oversold_threshold=30, overbought_threshold=70):
     """Get RSI overbought/oversold signals"""
     df = df.copy()
-    df['rsi_oversold'] = df['RSI'] < 30
-    df['rsi_overbought'] = df['RSI'] > 70
+    df['rsi_oversold'] = df['RSI'] < oversold_threshold
+    df['rsi_overbought'] = df['RSI'] > overbought_threshold
     
     signals = {
         'oversold_periods': df[df['rsi_oversold']].copy(),
