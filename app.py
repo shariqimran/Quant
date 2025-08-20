@@ -12,7 +12,8 @@ from src.ui.components import (
     render_welcome_message,
     render_ma_backtest_ui,
     render_volatility_analysis_ui,
-    render_rsi_backtest_ui
+    render_rsi_backtest_ui,
+    render_sentiment_analysis_ui
 )
 from src.data.data_fetcher import fetch_data, calculate_returns, get_data_summary
 from src.indicators.technical_indicators import (
@@ -32,6 +33,7 @@ from src.visualization.charts import (
     plot_volatility_distribution
 )
 from src.strategies.backtest import moving_average_backtest, rsi_backtest
+from src.sentiment.sentiment_analyzer import analyze_symbol
 from src.utils.helpers import suppress_warnings
 
 # Suppress warnings
@@ -67,10 +69,11 @@ def main():
             render_data_summary(df)
             
             # Create tabs for different analyses
-            tab1, tab2, tab3, tab4, tab5 = st.tabs([
+            tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
                 "📊 Volatility Analysis", 
                 "🔄 RSI Backtest",
                 "🧪 MA Backtest",
+                "📈 Sentiment Analysis",
                 "📋 Summary Statistics",
                 "📁 Data Export"
             ])
@@ -147,8 +150,52 @@ def main():
                         st.subheader("Trade Log")
                         st.dataframe(log_df)
             
-            # Tab 4: Summary Statistics
+            # Tab 4: Sentiment Analysis
             with tab4:
+                should_analyze = render_sentiment_analysis_ui(inputs['symbol'])
+                
+                if should_analyze:
+                    with st.spinner("Fetching and analyzing sentiment data..."):
+                        try:
+                            sentiment_result = analyze_symbol(inputs['symbol'])
+                            
+                            # Display results
+                            col1, col2, col3 = st.columns(3)
+                            with col1:
+                                st.metric("Verdict", sentiment_result['verdict'])
+                            with col2:
+                                st.metric("Confidence", f"{sentiment_result['confidence']:.2f}")
+                            with col3:
+                                st.metric("Volume", sentiment_result['metrics'].get('V', 0))
+                            
+                            # Display metrics
+                            st.subheader("Sentiment Metrics")
+                            metrics = sentiment_result['metrics']
+                            if metrics:
+                                col1, col2, col3, col4 = st.columns(4)
+                                with col1:
+                                    st.metric("Sentiment Score", f"{metrics.get('S', 0):.3f}")
+                                with col2:
+                                    st.metric("Breadth", f"{metrics.get('breadth', 0):.3f}")
+                                with col3:
+                                    st.metric("Intensity", f"{metrics.get('intensity', 0):.3f}")
+                                with col4:
+                                    st.metric("Volume", metrics.get('V', 0))
+                            
+                            # Display top reasons
+                            if sentiment_result['reasons']:
+                                st.subheader("Top Sentiment Sources")
+                                for i, reason in enumerate(sentiment_result['reasons'], 1):
+                                    with st.expander(f"Source {i}: {reason['src']} (Score: {reason['score']:.3f})"):
+                                        st.write(f"**Excerpt:** {reason['excerpt']}")
+                                        st.write(f"**Link:** [{reason['link']}]({reason['link']})")
+                            
+                        except Exception as e:
+                            st.error(f"Error analyzing sentiment: {str(e)}")
+                            st.info("This might be due to network issues or rate limiting. Please try again later.")
+            
+            # Tab 5: Summary Statistics
+            with tab5:
                 st.subheader("Summary Statistics")
                 
                 # Get volatility parameters (using default values for summary)
@@ -196,8 +243,8 @@ def main():
                 with col4:
                     st.metric("Max Drawdown", f"{return_stats['max_drawdown']:.2f}%")
             
-            # Tab 5: Data Export
-            with tab5:
+            # Tab 6: Data Export
+            with tab6:
                 st.subheader("Data Export")
                 
                 # Download processed data

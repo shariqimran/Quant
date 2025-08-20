@@ -253,3 +253,20 @@ def render_rsi_backtest_ui(symbol, start_date, end_date):
         'oversold_threshold': oversold_threshold,
         'overbought_threshold': overbought_threshold
     }
+
+def render_sentiment_analysis_ui(symbol):
+    """Render sentiment analysis UI"""
+    st.subheader("Sentiment Analysis")
+    st.markdown("""
+    This analysis fetches and analyzes sentiment from Reddit and Google News sources:
+    - **Reddit**: Searches r/stocks, r/investing, r/wallstreetbets, r/CryptoCurrency
+    - **Google News**: Searches for recent news articles
+    - **VADER Sentiment**: Analyzes text sentiment using VADER (Valence Aware Dictionary and sEntiment Reasoner)
+    """)
+    st.info("This may take a few moments to fetch and analyze the latest posts and news.")
+    
+    # Analysis button
+    if st.button("🔍 Analyze Sentiment", key="run_sentiment_analysis"):
+        return True
+    
+    return False
