@@ -1,4 +1,4 @@
-# Quant
+# Quant 
 Quantitative trading strategies and backtesting framework for cryptocurrency markets.
 
 ## Strategies
