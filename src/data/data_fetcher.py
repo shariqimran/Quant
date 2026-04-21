@@ -4,69 +4,87 @@ import yfinance as yf
 import numpy as np
 
 
-@st.cache_data
-def fetch_data(symbol, interval, start_date, end_date):
-    """Fetch data from Yahoo Finance with caching"""
-    try:
-        ticker = yf.Ticker(symbol)
-        df = ticker.history(start=start_date, end=end_date, interval=interval)
+@st.cache_data(ttl=600, show_spinner="Fetching data...")
+def _fetch_data_cached(symbol, interval, start_date, end_date):
+    """
+    Call Yahoo Finance and return a normalized DataFrame.
 
-        if df.empty:
-            st.error(f"No data found for {symbol}")
-            return None
+    On any failure this function **raises** so Streamlit does not cache a poisoned
+    result (e.g. after a 429 rate limit). Only successful returns are cached.
+    """
+    ticker = yf.Ticker(symbol)
+    df = ticker.history(start=start_date, end=end_date, interval=interval)
 
-        df = df.reset_index()
+    if df.empty:
+        raise RuntimeError(f"No data returned for {symbol} (empty response).")
 
-        if isinstance(df.columns, pd.MultiIndex):
-            df.columns = df.columns.get_level_values(0)
+    df = df.reset_index()
 
-        date_col = (
-            "Date"
-            if "Date" in df.columns
-            else ("Datetime" if "Datetime" in df.columns else df.columns[0])
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+
+    date_col = (
+        "Date"
+        if "Date" in df.columns
+        else ("Datetime" if "Datetime" in df.columns else df.columns[0])
+    )
+
+    rename_map = {
+        date_col: "timestamp",
+        "Open": "open",
+        "High": "high",
+        "Low": "low",
+        "Close": "close",
+        "Volume": "volume",
+    }
+    df = df.rename(columns=rename_map)
+
+    if "Adj Close" in df.columns:
+        df["close"] = df["Adj Close"]
+
+    df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True, errors="coerce")
+    if "volume" in df.columns:
+        df["volume"] = pd.to_numeric(df["volume"], errors="coerce").fillna(0)
+    else:
+        df["volume"] = 0
+
+    for col in ("open", "high", "low", "close"):
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    required_columns = ["timestamp", "open", "high", "low", "close", "volume"]
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    if missing_columns:
+        raise RuntimeError(
+            f"Missing required columns: {missing_columns}. Available: {list(df.columns)}"
         )
 
-        rename_map = {
-            date_col: "timestamp",
-            "Open": "open",
-            "High": "high",
-            "Low": "low",
-            "Close": "close",
-            "Volume": "volume",
-        }
-        df = df.rename(columns=rename_map)
+    df = df[required_columns]
+    df = df.dropna(subset=["timestamp", "open", "high", "low", "close"])
 
-        if "Adj Close" in df.columns:
-            df["close"] = df["Adj Close"]
+    if df.empty:
+        raise RuntimeError(f"No usable rows after cleaning for {symbol}.")
 
-        df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True, errors="coerce")
-        if "volume" in df.columns:
-            df["volume"] = pd.to_numeric(df["volume"], errors="coerce").fillna(0)
-        else:
-            df["volume"] = 0
+    return df.sort_values("timestamp").reset_index(drop=True)
 
-        for col in ("open", "high", "low", "close"):
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
 
-        required_columns = ["timestamp", "open", "high", "low", "close", "volume"]
-        missing_columns = [col for col in required_columns if col not in df.columns]
-        if missing_columns:
-            st.error(f"Missing required columns: {missing_columns}")
-            st.write(f"Available columns: {list(df.columns)}")
-            return None
-
-        df = df[required_columns]
-        df = df.dropna(subset=["timestamp", "open", "high", "low", "close"])
-
-        if df.empty:
-            st.error(f"No data found for {symbol}")
-            return None
-
-        return df.sort_values("timestamp").reset_index(drop=True)
+def fetch_data(symbol, interval, start_date, end_date):
+    """Fetch data from Yahoo Finance with caching (successes only)."""
+    try:
+        return _fetch_data_cached(symbol, interval, start_date, end_date)
     except Exception as e:
-        st.error(f"Error fetching data: {str(e)}")
-        st.write("Please check if the symbol is valid and try again.")
+        msg = str(e)
+        st.error(f"Error fetching data: {msg}")
+        low = msg.lower()
+        if "too many requests" in low or "429" in msg or "rate limit" in low:
+            st.warning(
+                "Yahoo Finance often **rate-limits shared IPs** (typical on hosted Streamlit). "
+                "This failure was **not** stored in the app cache, so the next fetch will try again. "
+                "Wait a few minutes, try another symbol briefly, or use **⋮ menu → Clear cache** if "
+                "you still see stale behavior."
+            )
+        else:
+            st.caption("Check the symbol, interval, and date range (Yahoo has limits on intraday history).")
         return None
 
 
