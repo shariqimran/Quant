@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+from src.utils.helpers import get_interval_ppy
+
 def calculate_moving_averages(df, short_window, long_window):
     """Calculate moving averages"""
     df = df.copy()
@@ -100,15 +102,34 @@ def get_volatility_summary_stats(df, fast_window, slow_window):
     
     return stats
 
-def get_return_statistics(df):
-    """Calculate return statistics"""
-    returns = df['return_log'].dropna()
-    
+def get_return_statistics(df, interval="1d"):
+    """Per-bar log-return stats; Sharpe annualized using same periods/year as volatility; max drawdown from close."""
+    returns = df["return_log"].dropna()
+    std = returns.std()
+    mean = returns.mean()
+    ppy = get_interval_ppy(interval)
+    if len(returns) < 2 or not np.isfinite(std) or std == 0:
+        sharpe_ratio = 0.0
+        vol_pct = 0.0
+    else:
+        sharpe_ratio = float((mean / std) * np.sqrt(ppy))
+        vol_pct = float(std * 100)
+
+    close = pd.to_numeric(df["close"], errors="coerce").dropna()
+    if len(close) < 2 or close.iloc[0] == 0:
+        max_drawdown = 0.0
+    else:
+        equity = close / close.iloc[0]
+        running_max = equity.cummax()
+        dd = (equity / running_max - 1.0) * 100.0
+        max_drawdown = float(dd.min())
+
+    mean_pct = float(mean * 100) if np.isfinite(mean) else 0.0
+
     stats = {
-        'mean_return': returns.mean() * 100,
-        'volatility': returns.std() * 100,
-        'sharpe_ratio': (returns.mean() / returns.std()) * np.sqrt(252),
-        'max_drawdown': returns.cumsum().min() * 100
+        "mean_return": mean_pct,
+        "volatility": vol_pct,
+        "sharpe_ratio": sharpe_ratio,
+        "max_drawdown": max_drawdown,
     }
-    
     return stats

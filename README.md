@@ -7,7 +7,7 @@ This project implements and backtests various technical analysis strategies for 
 
 ## Supported Data Intervals (Yahoo Finance via `yfinance`)
 
-When fetching data with `fetch_data_yf`, you can choose how often price/volume is sampled. This is controlled by the **`interval`** parameter.
+When fetching data in the Streamlit app (`app.py` → `src/data/data_fetcher.py`) or with the `fetch_data_yf` helper, you can choose how often price/volume is sampled. This is controlled by the **`interval`** parameter.
 
 | Interval     | Meaning             | Typical Use Case                   | Availability (Yahoo)            |
 |--------------|---------------------|------------------------------------|---------------------------------|
@@ -27,6 +27,7 @@ When fetching data with `fetch_data_yf`, you can choose how often price/volume i
 - **Daily or higher (`1d`, `1wk`, `1mo`, `3mo`)** can go back decades depending on the asset.  
 - For **backtests**, start with `1d` or higher — intraday data has more quirks and requires more cleaning.  
 - Stocks often include an **`Adj Close`** column (adjusted for dividends/splits). In our pipeline, we standardize this into `close`.
+- **Intraday:** Yahoo may expose the datetime column as `Datetime` instead of `Date`; the app fetcher normalizes this to `timestamp` (UTC).
 
 ### RSI (Relative Strength Index) Strategy
 
@@ -34,9 +35,12 @@ When fetching data with `fetch_data_yf`, you can choose how often price/volume i
 
 **Why it's used:** RSI is one of the most popular momentum oscillators in technical analysis. It helps traders identify potential reversal points when an asset has moved too far in one direction, making it useful for both trending and ranging markets.
 
-**Strategy Logic:**
-- **Buy Signal:** RSI < 30 (oversold) AND price above 50-day moving average (uptrend confirmation)
-- **Sell Signal:** RSI > 70 (overbought)
+**Strategy Logic (Streamlit app — RSI Backtest tab):**
+- **Buy:** RSI below your oversold threshold (default 30) while flat
+- **Sell:** RSI above your overbought threshold (default 70) while long  
+  Thresholds are configurable in the UI. The RSI series uses rolling mean gains/losses (a common simplification; not Wilder-smoothed “textbook” RSI).
+
+**Experimental / script variant:** `src/rsi.py` uses a different rule set (e.g. RSI with a 50-day MA filter). Do not assume it matches the web backtest.
 
 **RSI Formula:**
 ```
@@ -44,7 +48,7 @@ RSI = 100 - (100 / (1 + RS))
 where RS = Average Gain / Average Loss
 ```
 
-**Implementation:** `src/rsi.py`
+**Web app implementation:** `src/strategies/backtest.py` (`rsi_backtest`). **Legacy script:** `src/rsi.py`
 
 ### Moving Average Crossover Strategy
 
@@ -52,9 +56,8 @@ where RS = Average Gain / Average Loss
 
 **Why it's used:** Moving average crossovers are widely used because they help identify trend changes and filter out market noise. They work well in trending markets and provide clear entry/exit signals.
 
-**Strategy Logic:**
-- **Buy Signal:** 20-day SMA crosses above 50-day SMA (golden cross)
-- **Sell Signal:** 20-day SMA crosses below 50-day SMA (death cross)
+**Strategy Logic (Streamlit app — MA Backtest tab):**
+- **Buy:** Short MA crosses above long MA (golden cross); window lengths are sliders in the UI (not fixed 20/50).
 
 **Moving Average Formula:**
 ```
@@ -62,7 +65,7 @@ SMA = (P₁ + P₂ + ... + Pₙ) / n
 where P = Price, n = Period
 ```
 
-**Implementation:** `src/backtest.py`
+**Web app implementation:** `src/strategies/backtest.py` (`moving_average_backtest`). **Legacy matplotlib script:** `src/backtest.py`
 
 ## Web Application
 
@@ -75,10 +78,11 @@ This project includes a **Streamlit web application** that provides an interacti
    pip install -r requirements.txt
    ```
 
-2. **Run the web app:**
+2. **Run the web app** (from the project root; optionally create `.venv` first — see `run_app.sh`):
    ```bash
    streamlit run app.py
    ```
+   Or: `./run_app.sh` (activates `.venv` if present).
 
 3. **Open your browser** and navigate to `http://localhost:8501`
 

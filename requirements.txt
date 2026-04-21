@@ -2,6 +2,7 @@ streamlit
 pandas
 numpy
 yfinance
+websockets>=13.0
 plotly
 feedparser
 vaderSentiment
