@@ -8,3 +8,5 @@ feedparser
 vaderSentiment
 beautifulsoup4
 html5lib
+
+matplotlib
