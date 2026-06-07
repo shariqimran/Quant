@@ -12,7 +12,15 @@ def render_sidebar_inputs():
 
         page = st.pills(
             "Navigation",
-            ["Home", "Market Data", "Strategy Lab", "Risk & Metrics", "Sentiment", "Export"],
+            [
+                "Home",
+                "Market Data",
+                "Strategy Lab",
+                "Risk & Metrics",
+                "Black-Scholes",
+                "Sentiment",
+                "Export",
+            ],
             default="Home",
             label_visibility="collapsed",
             width="stretch",

@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="QuantAlgo is a real-time trading analysis and backtesting dashboard built with Streamlit, Python, Pandas, Plotly, Yahoo Finance, and VADER sentiment analysis."
+    />
+    <title>QuantAlgo | Real-time trading intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/quantalgo-site.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <div class="ambient-grid" aria-hidden="true"></div>
+      <div class="cursor-light" aria-hidden="true"></div>
+
+      <header class="site-header">
+        <a class="brand" href="#top" aria-label="QuantAlgo home">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          <span>QuantAlgo</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#features">Features</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#stack">Stack</a>
+          <a href="#preview">Preview</a>
+        </nav>
+        <a class="header-cta" href="https://quantalgo.streamlit.app/" target="_blank" rel="noreferrer">
+          Launch app
+        </a>
+      </header>
+
+      <main id="top">
+        <section class="hero-section section-reveal">
+          <div class="hero-copy">
+            <div class="eyebrow">
+              <span class="pulse-dot" aria-hidden="true"></span>
+              Live market research sandbox
+            </div>
+            <h1>Real-time trading intelligence for analysis, backtesting, and market context.</h1>
+            <p class="hero-subtitle">
+              QuantAlgo brings market data, technical strategies, portfolio metrics, sentiment signals,
+              and interactive visualizations into one focused Streamlit dashboard.
+            </p>
+            <div class="hero-actions" aria-label="Project links">
+              <a class="button button-primary" href="https://quantalgo.streamlit.app/" target="_blank" rel="noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 17 17 7M9 7h8v8" />
+                </svg>
+                View Live Demo
+              </a>
+              <a class="button button-secondary" href="https://github.com/shariqimran/Quant" target="_blank" rel="noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.1-1.3-.3-2.6-1.2-3.5.4-1.1.4-2.3 0-3.5 0 0-1 0-3 1.5a10.6 10.6 0 0 0-5.6 0C8 2 7 2 7 2c-.4 1.2-.4 2.4 0 3.5A5 5 0 0 0 5.8 9c0 3.5 3 5.5 6 5.5a4.8 4.8 0 0 0-1 3.5v4"
+                  />
+                  <path d="M9 18c-4.5 2-4-2-6-2" />
+                </svg>
+                View GitHub
+              </a>
+            </div>
+            <dl class="hero-stats" aria-label="QuantAlgo highlights">
+              <div>
+                <dt>Signals</dt>
+                <dd>MA, RSI, volatility</dd>
+              </div>
+              <div>
+                <dt>Backtests</dt>
+                <dd>PnL, win rate, drawdown</dd>
+              </div>
+              <div>
+                <dt>Context</dt>
+                <dd>Reddit + news sentiment</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="hero-visual" aria-label="Animated QuantAlgo dashboard preview">
+            <div class="dashboard-frame">
+              <div class="window-bar">
+                <span></span>
+                <span></span>
+                <span></span>
+                <p>QUANTALGO / STRATEGY LAB</p>
+              </div>
+              <div class="terminal-strip">
+                <span>AAPL</span>
+                <span>BTC-USD</span>
+                <span>SPY</span>
+                <span>TSLA</span>
+              </div>
+              <div class="market-panel">
+                <div class="panel-heading">
+                  <span>Equity curve</span>
+                  <strong>+18.42%</strong>
+                </div>
+                <svg class="hero-chart" viewBox="0 0 720 300" role="img" aria-label="Animated rising equity curve">
+                  <defs>
+                    <linearGradient id="equity-fill" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#2fffb2" stop-opacity=".34" />
+                      <stop offset="100%" stop-color="#2fffb2" stop-opacity="0" />
+                    </linearGradient>
+                    <linearGradient id="equity-line" x1="0" x2="1">
+                      <stop offset="0%" stop-color="#51d7ff" />
+                      <stop offset="50%" stop-color="#2fffb2" />
+                      <stop offset="100%" stop-color="#ffcf5a" />
+                    </linearGradient>
+                  </defs>
+                  <g class="chart-grid">
+                    <path d="M40 50h640M40 105h640M40 160h640M40 215h640M40 270h640" />
+                    <path d="M80 30v250M200 30v250M320 30v250M440 30v250M560 30v250M680 30v250" />
+                  </g>
+                  <path
+                    class="chart-area"
+                    d="M40 230 C95 218 102 155 150 166 C199 178 213 122 260 136 C310 151 333 92 385 102 C442 112 446 72 500 76 C552 80 560 42 610 54 C645 62 666 42 680 34 L680 280 L40 280 Z"
+                  />
+                  <path
+                    class="chart-line"
+                    pathLength="1"
+                    d="M40 230 C95 218 102 155 150 166 C199 178 213 122 260 136 C310 151 333 92 385 102 C442 112 446 72 500 76 C552 80 560 42 610 54 C645 62 666 42 680 34"
+                  />
+                  <g class="trade-markers">
+                    <circle cx="150" cy="166" r="6" />
+                    <circle cx="385" cy="102" r="6" />
+                    <circle cx="610" cy="54" r="6" />
+                  </g>
+                </svg>
+              </div>
+              <div class="dashboard-grid">
+                <div class="metric-tile positive">
+                  <span>Win rate</span>
+                  <strong>62.8%</strong>
+                  <small>RSI mean reversion</small>
+                </div>
+                <div class="metric-tile warning">
+                  <span>Max drawdown</span>
+                  <strong>-7.6%</strong>
+                  <small>Volatility adjusted</small>
+                </div>
+                <div class="sentiment-tile">
+                  <div>
+                    <span>Sentiment</span>
+                    <strong>0.37</strong>
+                  </div>
+                  <div class="sentiment-bars" aria-hidden="true">
+                    <i style="height: 34%"></i>
+                    <i style="height: 64%"></i>
+                    <i style="height: 46%"></i>
+                    <i style="height: 78%"></i>
+                    <i style="height: 55%"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="problem-section section-reveal">
+          <div class="section-kicker">Why it exists</div>
+          <div class="split-copy">
+            <h2>Trading research gets fragmented fast.</h2>
+            <p>
+              Analysts often jump between market data, indicators, manual spreadsheets, news, social context,
+              and portfolio-level performance views. QuantAlgo consolidates that exploratory workflow into a
+              single dashboard built for fast iteration and clear decision support.
+            </p>
+          </div>
+        </section>
+
+        <section id="features" class="section-block section-reveal">
+          <div class="section-heading">
+            <div class="section-kicker">Core system</div>
+            <h2>Everything needed to move from ticker idea to strategy readout.</h2>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card">
+              <span class="feature-icon">01</span>
+              <h3>Market data</h3>
+              <p>Fetch and inspect configurable assets using Yahoo Finance data across common research intervals.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon">02</span>
+              <h3>Technical strategies</h3>
+              <p>Explore moving average crossovers, RSI mean reversion, and volatility regimes with adjustable inputs.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon">03</span>
+              <h3>Backtesting engine</h3>
+              <p>Generate entries, exits, PnL, win rate, and drawdown metrics for strategy experiments.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon">04</span>
+              <h3>Portfolio metrics</h3>
+              <p>Review performance and risk views that make strategy behavior easier to compare and explain.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon">05</span>
+              <h3>Sentiment analysis</h3>
+              <p>Use Reddit and Google News context with VADER scoring to add market narrative signals.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon">06</span>
+              <h3>Interactive visuals</h3>
+              <p>Plotly-style dashboards expose trend, volatility, trade markers, and summary states at a glance.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="workflow" class="workflow-section section-reveal">
+          <div class="section-heading compact">
+            <div class="section-kicker">Workflow</div>
+            <h2>A compact research loop for rapid strategy exploration.</h2>
+          </div>
+          <ol class="workflow-rail">
+            <li>
+              <span>Select asset</span>
+              <p>Choose a ticker, interval, and date range.</p>
+            </li>
+            <li>
+              <span>Configure strategy</span>
+              <p>Tune MA windows, RSI thresholds, or volatility settings.</p>
+            </li>
+            <li>
+              <span>Backtest</span>
+              <p>Convert rules into trades and performance history.</p>
+            </li>
+            <li>
+              <span>Analyze performance</span>
+              <p>Review PnL, drawdown, win rate, and risk metrics.</p>
+            </li>
+            <li>
+              <span>Compare context</span>
+              <p>Layer in sentiment and market narrative signals.</p>
+            </li>
+          </ol>
+        </section>
+
+        <section id="stack" class="stack-section section-reveal">
+          <div class="section-heading compact">
+            <div class="section-kicker">Built with</div>
+            <h2>Python-first analytics with an interactive Streamlit surface.</h2>
+          </div>
+          <div class="stack-marquee" aria-label="Technology stack">
+            <span>Python</span>
+            <span>Streamlit</span>
+            <span>Pandas</span>
+            <span>NumPy</span>
+            <span>Plotly</span>
+            <span>Yahoo Finance API</span>
+            <span>VADER</span>
+            <span>Unit tests</span>
+          </div>
+        </section>
+
+        <section class="impact-section section-reveal">
+          <div class="impact-copy">
+            <div class="section-kicker">Project impact</div>
+            <h2>Built to make quant research faster to inspect, explain, and iterate.</h2>
+          </div>
+          <div class="impact-grid">
+            <div>
+              <strong>Configurable</strong>
+              <span>Strategy testing without hard-coded assumptions.</span>
+            </div>
+            <div>
+              <strong>Real-time</strong>
+              <span>Market exploration directly inside the dashboard.</span>
+            </div>
+            <div>
+              <strong>Faster</strong>
+              <span>Less context switching between tools and notebooks.</span>
+            </div>
+            <div>
+              <strong>Clear</strong>
+              <span>Portfolio-level readouts recruiters and engineers can parse quickly.</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="preview" class="preview-section section-reveal">
+          <div class="section-heading">
+            <div class="section-kicker">Dashboard preview</div>
+            <h2>A polished mock surface reflecting the live Streamlit experience.</h2>
+          </div>
+          <div class="preview-grid">
+            <div class="mock-screen large">
+              <div class="mock-toolbar">
+                <span>SPY</span>
+                <span>1d</span>
+                <span>MA crossover</span>
+              </div>
+              <div class="candles" aria-hidden="true">
+                <i style="--h: 52%; --y: 24%"></i>
+                <i style="--h: 64%; --y: 18%"></i>
+                <i style="--h: 38%; --y: 34%"></i>
+                <i style="--h: 72%; --y: 12%"></i>
+                <i style="--h: 44%; --y: 30%"></i>
+                <i style="--h: 58%; --y: 20%"></i>
+                <i style="--h: 34%; --y: 42%"></i>
+                <i style="--h: 68%; --y: 16%"></i>
+                <i style="--h: 48%; --y: 28%"></i>
+                <i style="--h: 76%; --y: 8%"></i>
+                <i style="--h: 40%; --y: 38%"></i>
+                <i style="--h: 62%; --y: 18%"></i>
+              </div>
+              <div class="overlay-line"></div>
+            </div>
+            <div class="mock-column">
+              <div class="mock-screen small">
+                <span class="mini-label">Backtest summary</span>
+                <div class="mini-metrics">
+                  <strong>1.42</strong>
+                  <strong>23</strong>
+                  <strong>7.6%</strong>
+                </div>
+                <div class="mini-labels">
+                  <span>Sharpe</span>
+                  <span>Trades</span>
+                  <span>Drawdown</span>
+                </div>
+              </div>
+              <div class="mock-screen small accent">
+                <span class="mini-label">News + Reddit sentiment</span>
+                <div class="sentiment-wave" aria-hidden="true"></div>
+                <p>Market narrative summarized beside price action and strategy output.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="final-cta section-reveal">
+          <div>
+            <div class="section-kicker">Explore the project</div>
+            <h2>Open the live app, inspect the source, and review how the research workflow is built.</h2>
+          </div>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://quantalgo.streamlit.app/" target="_blank" rel="noreferrer">
+              View Live Demo
+            </a>
+            <a class="button button-secondary" href="https://github.com/shariqimran/Quant" target="_blank" rel="noreferrer">
+              View GitHub
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./assets/quantalgo-site.js"></script>
+  </body>
+</html>

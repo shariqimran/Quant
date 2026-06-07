@@ -3,6 +3,7 @@
 import streamlit as st
 
 from src.quant_research.apps.streamlit.components.layout import render_welcome_message
+from src.quant_research.apps.streamlit.pages.black_scholes import render_black_scholes_page
 from src.quant_research.apps.streamlit.pages.export import render_export_page
 from src.quant_research.apps.streamlit.pages.home import render_home_page
 from src.quant_research.apps.streamlit.pages.market_data import render_market_data_page
@@ -36,8 +37,9 @@ def render_current_page(page, df, inputs):
         render_volatility_page(df, inputs)
         st.divider()
         render_risk_metrics_page(df, inputs)
+    elif page == "Black-Scholes":
+        render_black_scholes_page(inputs)
     elif page == "Sentiment":
         render_sentiment_page(inputs)
     elif page == "Export" and _require_data(df):
         render_export_page(df, inputs)
-

@@ -70,6 +70,10 @@ where P = Price, n = Period
 
 This project includes a **Streamlit web application** that provides an interactive interface for quantitative analysis.
 
+## Project Website
+
+A polished portfolio/product landing page for QuantAlgo is available at `docs/index.html`. It is a static site designed for GitHub Pages or direct local preview in a browser.
+
 ### 🚀 **Quick Start**
 
 1. **Install dependencies:**

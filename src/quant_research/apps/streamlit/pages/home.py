@@ -42,13 +42,83 @@ def render_home_page(df, inputs, has_data):
     """Render the dashboard landing page."""
     st.markdown(
         """
-        <div class="hero-panel">
-            <div class="hero-kicker">Modern Quant Dashboard</div>
-            <h2 class="hero-title">Research, test, and explain market strategies.</h2>
-            <div class="hero-subtitle">
-                A focused workspace for loading market data, inspecting signals, and moving toward realistic backtests.
+        <section class="qa-landing-hero">
+            <div class="qa-hero-copy">
+                <div class="qa-eyebrow"><span></span>Live market research sandbox</div>
+                <h1>Real-time trading intelligence for analysis, backtesting, and market context.</h1>
+                <p>
+                    QuantAlgo brings market data, technical strategies, portfolio metrics, sentiment signals,
+                    and interactive visualizations into one focused Streamlit dashboard.
+                </p>
+                <div class="qa-hero-actions">
+                    <a class="qa-button qa-button-primary" href="https://quantalgo.streamlit.app/" target="_blank" rel="noreferrer">View Live Demo</a>
+                    <a class="qa-button qa-button-secondary" href="https://github.com/shariqimran/Quant" target="_blank" rel="noreferrer">View GitHub</a>
+                </div>
+                <div class="qa-hero-stats">
+                    <div><strong>Signals</strong><span>MA, RSI, volatility</span></div>
+                    <div><strong>Backtests</strong><span>PnL, win rate, drawdown</span></div>
+                    <div><strong>Context</strong><span>Reddit + news sentiment</span></div>
+                </div>
             </div>
-        </div>
+            <div class="qa-dashboard-preview" aria-hidden="true">
+                <div class="qa-window-bar"><i></i><i></i><i></i><span>QUANTALGO / STRATEGY LAB</span></div>
+                <div class="qa-ticker-row"><span>AAPL</span><span>BTC-USD</span><span>SPY</span><span>TSLA</span></div>
+                <div class="qa-chart-panel">
+                    <div class="qa-panel-heading"><span>Equity curve</span><strong>+18.42%</strong></div>
+                    <svg class="qa-equity-chart" viewBox="0 0 720 300">
+                        <defs>
+                            <linearGradient id="qa-line" x1="0" x2="1">
+                                <stop offset="0%" stop-color="#51d7ff" />
+                                <stop offset="55%" stop-color="#2fffb2" />
+                                <stop offset="100%" stop-color="#ffcf5a" />
+                            </linearGradient>
+                            <linearGradient id="qa-fill" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset="0%" stop-color="#2fffb2" stop-opacity=".28" />
+                                <stop offset="100%" stop-color="#2fffb2" stop-opacity="0" />
+                            </linearGradient>
+                        </defs>
+                        <g class="qa-grid">
+                            <path d="M40 50h640M40 105h640M40 160h640M40 215h640M40 270h640" />
+                            <path d="M80 30v250M200 30v250M320 30v250M440 30v250M560 30v250M680 30v250" />
+                        </g>
+                        <path class="qa-chart-fill" d="M40 230 C95 218 102 155 150 166 C199 178 213 122 260 136 C310 151 333 92 385 102 C442 112 446 72 500 76 C552 80 560 42 610 54 C645 62 666 42 680 34 L680 280 L40 280 Z" />
+                        <path class="qa-chart-line" pathLength="1" d="M40 230 C95 218 102 155 150 166 C199 178 213 122 260 136 C310 151 333 92 385 102 C442 112 446 72 500 76 C552 80 560 42 610 54 C645 62 666 42 680 34" />
+                    </svg>
+                </div>
+                <div class="qa-mini-grid">
+                    <div><span>Win rate</span><strong>62.8%</strong><small>RSI mean reversion</small></div>
+                    <div><span>Max drawdown</span><strong>-7.6%</strong><small>Volatility adjusted</small></div>
+                    <div><span>Sentiment</span><strong>0.37</strong><small>VADER composite</small></div>
+                </div>
+            </div>
+        </section>
+        <section class="qa-story-panel">
+            <div>
+                <span class="qa-section-kicker">Why it exists</span>
+                <h2>Trading research gets fragmented fast.</h2>
+            </div>
+            <p>
+                Analysts often jump between market data, indicators, spreadsheets, news, social context,
+                and portfolio performance views. QuantAlgo consolidates that exploratory loop into one
+                dashboard built for fast iteration and clear decision support.
+            </p>
+        </section>
+        <section class="qa-feature-section">
+            <span class="qa-section-kicker">Core system</span>
+            <h2>From ticker idea to strategy readout.</h2>
+            <div class="qa-feature-grid">
+                <article><span>01</span><h3>Market data</h3><p>Configurable assets and intervals through Yahoo Finance.</p></article>
+                <article><span>02</span><h3>Technical strategies</h3><p>Moving averages, RSI mean reversion, and volatility views.</p></article>
+                <article><span>03</span><h3>Backtesting engine</h3><p>Entries, exits, PnL, win rate, and drawdown metrics.</p></article>
+                <article><span>04</span><h3>Portfolio metrics</h3><p>Performance and risk summaries for clearer comparison.</p></article>
+                <article><span>05</span><h3>Sentiment analysis</h3><p>Reddit and Google News context scored with VADER.</p></article>
+                <article><span>06</span><h3>Interactive visuals</h3><p>Plotly-style charts for trend, volatility, and trade markers.</p></article>
+            </div>
+        </section>
+        <section class="qa-workflow">
+            <span class="qa-section-kicker">Workflow</span>
+            <h2>Select asset → Configure strategy → Backtest → Analyze performance → Compare sentiment.</h2>
+        </section>
         """,
         unsafe_allow_html=True,
     )
