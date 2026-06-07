@@ -1,5 +1,6 @@
-# Quant 
-Quantitative trading strategies and backtesting framework for cryptocurrency markets.
+# Quant Research Dashboard
+
+Quantitative trading research dashboard and backtesting sandbox for learning practical market data analysis, indicators, strategy evaluation, and portfolio metrics.
 
 ## Strategies
 
@@ -7,7 +8,7 @@ This project implements and backtests various technical analysis strategies for 
 
 ## Supported Data Intervals (Yahoo Finance via `yfinance`)
 
-When fetching data in the Streamlit app (`app.py` → `src/data/data_fetcher.py`) or with the `fetch_data_yf` helper, you can choose how often price/volume is sampled. This is controlled by the **`interval`** parameter.
+When fetching data in the Streamlit app (`app.py` -> `src/quant_research/apps/streamlit/services/market_data.py`) or with `scripts/download_yahoo_data.py`, you can choose how often price/volume is sampled. This is controlled by the **`interval`** parameter.
 
 | Interval     | Meaning             | Typical Use Case                   | Availability (Yahoo)            |
 |--------------|---------------------|------------------------------------|---------------------------------|
@@ -40,15 +41,13 @@ When fetching data in the Streamlit app (`app.py` → `src/data/data_fetcher.py`
 - **Sell:** RSI above your overbought threshold (default 70) while long  
   Thresholds are configurable in the UI. The RSI series uses rolling mean gains/losses (a common simplification; not Wilder-smoothed “textbook” RSI).
 
-**Experimental / script variant:** `src/rsi.py` uses a different rule set (e.g. RSI with a 50-day MA filter). Do not assume it matches the web backtest.
-
 **RSI Formula:**
 ```
 RSI = 100 - (100 / (1 + RS))
 where RS = Average Gain / Average Loss
 ```
 
-**Web app implementation:** `src/strategies/backtest.py` (`rsi_backtest`). **Legacy script:** `src/rsi.py`
+**Implementation:** `src/quant_research/backtesting/engine.py` and `src/quant_research/backtesting/runners.py`
 
 ### Moving Average Crossover Strategy
 
@@ -65,11 +64,15 @@ SMA = (P₁ + P₂ + ... + Pₙ) / n
 where P = Price, n = Period
 ```
 
-**Web app implementation:** `src/strategies/backtest.py` (`moving_average_backtest`). **Legacy matplotlib script:** `src/backtest.py`
+**Implementation:** `src/quant_research/backtesting/engine.py` and `src/quant_research/backtesting/runners.py`
 
 ## Web Application
 
 This project includes a **Streamlit web application** that provides an interactive interface for quantitative analysis.
+
+## Project Website
+
+A polished portfolio/product landing page for QuantAlgo is available at `docs/index.html`. It is a static site designed for GitHub Pages or direct local preview in a browser.
 
 ### 🚀 **Quick Start**
 
@@ -109,8 +112,57 @@ This project includes a **Streamlit web application** that provides an interacti
 
 ## Project Structure
 
-- `src/` - Strategy implementations and backtesting scripts
-- `data/` - Historical price data
-- `trade_logs/` - Generated trade logs from backtests
-- `app.py` - Streamlit web application
-- `requirements.txt` - Python dependencies
+- `app.py` - Thin Streamlit entrypoint
+- `src/quant_research/` - Main package for app UI, data helpers, indicators, metrics, config, and utilities
+- `src/quant_research/apps/streamlit/` - Streamlit app router, pages, reusable components, and state helpers
+- `src/quant_research/backtesting/` - Backtest engine and runner functions
+- `src/quant_research/visualization/` - Plotly chart builders for market data and backtests
+- `src/quant_research/sentiment/` - Experimental sentiment analysis helpers
+- `scripts/download_yahoo_data.py` - Active script for downloading Yahoo Finance data into `data/raw/`
+- `data/raw/` - Downloaded market datasets
+- `data/sample/` - Small sample datasets for local experiments
+- `reports/trade_logs/` - Generated trade logs and backtest outputs
+- `docs/` - Code review, architecture plan, and refactor handoff notes
+- `tests/` - Unit tests for core calculations
+- `googlea0953003ef3c7c99.html` - Google site verification file; keep at repo root if the deployed app/site still needs verification
+
+## Tests
+
+Run the current test suite from the project root:
+
+```bash
+python -m unittest discover -s tests
+```
+
+The tests currently cover:
+
+- indicator calculations,
+- return/metric helpers,
+- date filtering,
+- data validation,
+- current MA and RSI backtest behavior.
+
+## Quant Limitations
+
+This is an educational research dashboard, not a live trading system.
+
+Current backtests are useful for learning and UI experimentation, but they are not yet realistic enough for production trading decisions. Important next upgrades include:
+
+- explicit next-bar signal execution to avoid lookahead assumptions,
+- transaction costs and slippage,
+- clearer cash/position accounting,
+- buy-and-hold benchmark comparisons,
+- train/test or walk-forward evaluation for parameter experiments,
+- stronger trade-level metrics such as win rate and average trade return.
+
+Do not interpret one backtest result as proof of profitability.
+
+## Development Notes
+
+- Keep reusable logic under `src/quant_research/`.
+- Keep Streamlit rendering under `src/quant_research/apps/streamlit/`.
+- Keep pure backtest calculations under `src/quant_research/backtesting/engine.py`.
+- Keep chart creation under `src/quant_research/visualization/`.
+- Keep generated artifacts under `reports/`.
+- Keep exploratory notebooks under `notebooks/`.
+- Prefer adding tests before changing strategy or backtest behavior.
