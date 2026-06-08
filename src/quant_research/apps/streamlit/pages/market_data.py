@@ -18,7 +18,7 @@ def render_market_data_page(df, inputs):
     st.line_chart(df.set_index("timestamp")["close"])
 
     st.markdown("#### Latest rows")
-    st.dataframe(df.tail(20), width="stretch", hide_index=True)
+    st.dataframe(df.tail(20), use_container_width=True, hide_index=True)
 
     st.markdown("#### Data quality")
     col1, col2, col3 = st.columns(3)
