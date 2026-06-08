@@ -18,6 +18,7 @@ def render_sidebar_inputs():
                 "Strategy Lab",
                 "Risk & Metrics",
                 "Black-Scholes",
+                "Binomial",
                 "Sentiment",
                 "Export",
             ],
