@@ -163,3 +163,156 @@ def calculate_black_scholes(
         d1=d1,
         d2=d2,
     )
+
+
+@dataclass(frozen=True)
+class BlackScholesBreakdown:
+    """Inputs, intermediate terms, and outputs for UI display."""
+
+    spot: float
+    strike: float
+    time_to_expiry: float
+    volatility: float
+    risk_free_rate: float
+    dividend_yield: float
+    discount_spot: float
+    discount_strike: float
+    sqrt_time: float
+    log_sk: float | None
+    variance_half: float | None
+    rate_adjustment: float | None
+    drift_term: float | None
+    vol_sqrt_time: float | None
+    d1_numerator: float | None
+    d1: float | None
+    d2: float | None
+    nd1: float | None
+    nd2: float | None
+    n_neg_d1: float | None
+    n_neg_d2: float | None
+    pdf_d1: float | None
+    spot_discounted: float | None
+    strike_discounted: float | None
+    call_term_spot: float | None
+    call_term_strike: float | None
+    put_term_strike: float | None
+    put_term_spot: float | None
+    result: BlackScholesResult
+
+
+def calculate_black_scholes_breakdown(
+    spot,
+    strike,
+    time_to_expiry,
+    volatility,
+    risk_free_rate=0.0,
+    dividend_yield=0.0,
+):
+    """Return Black-Scholes outputs plus intermediate calculation terms."""
+    result = calculate_black_scholes(
+        spot=spot,
+        strike=strike,
+        time_to_expiry=time_to_expiry,
+        volatility=volatility,
+        risk_free_rate=risk_free_rate,
+        dividend_yield=dividend_yield,
+    )
+
+    spot = float(spot)
+    strike = float(strike)
+    time_to_expiry = float(time_to_expiry)
+    volatility = float(volatility)
+    risk_free_rate = float(risk_free_rate)
+    dividend_yield = float(dividend_yield)
+
+    discount_spot = exp(-dividend_yield * time_to_expiry)
+    discount_strike = exp(-risk_free_rate * time_to_expiry)
+
+    if time_to_expiry == 0 or volatility == 0:
+        spot_discounted = spot * discount_spot
+        strike_discounted = strike * discount_strike
+        return BlackScholesBreakdown(
+            spot=spot,
+            strike=strike,
+            time_to_expiry=time_to_expiry,
+            volatility=volatility,
+            risk_free_rate=risk_free_rate,
+            dividend_yield=dividend_yield,
+            discount_spot=discount_spot,
+            discount_strike=discount_strike,
+            sqrt_time=0.0,
+            log_sk=None,
+            variance_half=None,
+            rate_adjustment=None,
+            drift_term=None,
+            vol_sqrt_time=None,
+            d1_numerator=None,
+            d1=result.d1,
+            d2=result.d2,
+            nd1=None,
+            nd2=None,
+            n_neg_d1=None,
+            n_neg_d2=None,
+            pdf_d1=None,
+            spot_discounted=spot_discounted,
+            strike_discounted=strike_discounted,
+            call_term_spot=None,
+            call_term_strike=None,
+            put_term_strike=None,
+            put_term_spot=None,
+            result=result,
+        )
+
+    sqrt_time = sqrt(time_to_expiry)
+    d1 = result.d1
+    d2 = result.d2
+    log_sk = log(spot / strike)
+    variance_half = 0.5 * volatility * volatility
+    rate_adjustment = risk_free_rate - dividend_yield + variance_half
+    drift_term = rate_adjustment * time_to_expiry
+    vol_sqrt_time = volatility * sqrt_time
+    d1_numerator = log_sk + drift_term
+    nd1 = _norm_cdf(d1)
+    nd2 = _norm_cdf(d2)
+    n_neg_d2 = _norm_cdf(-d2)
+    n_neg_d1 = _norm_cdf(-d1)
+    pdf_d1 = _norm_pdf(d1)
+
+    spot_discounted = spot * discount_spot
+    strike_discounted = strike * discount_strike
+    call_term_spot = spot_discounted * nd1
+    call_term_strike = strike_discounted * nd2
+    put_term_strike = strike_discounted * n_neg_d2
+    put_term_spot = spot_discounted * n_neg_d1
+
+    return BlackScholesBreakdown(
+        spot=spot,
+        strike=strike,
+        time_to_expiry=time_to_expiry,
+        volatility=volatility,
+        risk_free_rate=risk_free_rate,
+        dividend_yield=dividend_yield,
+        discount_spot=discount_spot,
+        discount_strike=discount_strike,
+        sqrt_time=sqrt_time,
+        log_sk=log_sk,
+        variance_half=variance_half,
+        rate_adjustment=rate_adjustment,
+        drift_term=drift_term,
+        vol_sqrt_time=vol_sqrt_time,
+        d1_numerator=d1_numerator,
+        d1=d1,
+        d2=d2,
+        nd1=nd1,
+        nd2=nd2,
+        n_neg_d1=n_neg_d1,
+        n_neg_d2=n_neg_d2,
+        pdf_d1=pdf_d1,
+        spot_discounted=spot_discounted,
+        strike_discounted=strike_discounted,
+        call_term_spot=call_term_spot,
+        call_term_strike=call_term_strike,
+        put_term_strike=put_term_strike,
+        put_term_spot=put_term_spot,
+        result=result,
+    )

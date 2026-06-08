@@ -34,19 +34,19 @@ def render_volatility_page(df, inputs):
         vol_inputs["slow_vol_window"],
         vol_inputs["return_type"],
     )
-    st.plotly_chart(fig, width="stretch")
+    st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Volatility Regimes")
     fig = plot_volatility_regimes(
         df_vol, inputs["symbol"], vol_inputs["fast_vol_window"], vol_inputs["slow_vol_window"]
     )
-    st.plotly_chart(fig, width="stretch")
+    st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Volatility Distribution")
     fig = plot_volatility_distribution(
         df_vol, vol_inputs["fast_vol_window"], vol_inputs["slow_vol_window"], inputs["symbol"]
     )
-    st.plotly_chart(fig, width="stretch")
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def render_risk_metrics_page(df, inputs):
