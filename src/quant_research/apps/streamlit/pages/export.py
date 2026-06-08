@@ -15,7 +15,7 @@ def render_export_page(df, inputs):
     )
 
     st.markdown("#### Preview")
-    st.dataframe(df.head(20), width="stretch")
+    st.dataframe(df.head(20), use_container_width=True)
 
     st.markdown("#### Data information")
     st.write(f"**Shape:** {df.shape}")

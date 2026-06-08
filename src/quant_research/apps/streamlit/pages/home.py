@@ -35,7 +35,7 @@ def _render_home_price_chart(df, symbol):
         font=dict(size=12, color="#cbd5e1"),
         title_font=dict(color="#f8fafc", size=15),
     )
-    st.plotly_chart(fig, width="stretch")
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def render_home_page(df, inputs, has_data):
@@ -157,7 +157,7 @@ def render_home_page(df, inputs, has_data):
             st.markdown('<div class="section-label">Recent Bars</div>', unsafe_allow_html=True)
             st.dataframe(
                 df[["timestamp", "open", "high", "low", "close", "volume"]].tail(7),
-                width="stretch",
+                use_container_width=True,
                 hide_index=True,
                 height=310,
             )

@@ -557,6 +557,49 @@ def load_custom_css():
             border-radius: 7px;
             font-weight: 650;
         }
+        .options-chain-panel {
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 14px;
+            padding: 1rem 1.05rem 0.35rem;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(8, 14, 28, 0.88));
+            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
+            margin-bottom: 0.75rem;
+        }
+        .options-chain-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.85rem;
+        }
+        .options-chain-header h3 {
+            margin: 0;
+            color: #f8fafc;
+            font-size: 1.05rem;
+            font-weight: 750;
+        }
+        .options-chain-header p {
+            margin: 0.28rem 0 0;
+            color: #94a3b8;
+            font-size: 0.86rem;
+            line-height: 1.45;
+            max-width: 42rem;
+        }
+        .options-chain-hint {
+            border: 1px dashed rgba(81, 215, 255, 0.28);
+            border-radius: 10px;
+            padding: 0.55rem 0.75rem;
+            color: #cbd5e1;
+            font-size: 0.82rem;
+            background: rgba(81, 215, 255, 0.06);
+            margin-bottom: 0.85rem;
+        }
+        div[data-testid="stDataFrame"] {
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(2, 6, 23, 0.55);
+        }
         .stTabs [data-baseweb="tab-list"] {
             gap: 8px;
         }

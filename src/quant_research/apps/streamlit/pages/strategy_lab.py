@@ -64,9 +64,9 @@ def _render_moving_average_backtest(df, inputs):
             st.error("Backtest failed. Not enough data or invalid symbol/date range.")
         else:
             st.success(f"Final Portfolio Value: ${final_value:,.2f}")
-            st.plotly_chart(fig, width="stretch")
+            st.plotly_chart(fig, use_container_width=True)
             st.subheader("Trade Log")
-            st.dataframe(log_df, width="stretch")
+            st.dataframe(log_df, use_container_width=True)
 
 
 def _render_rsi_backtest(df, inputs):
@@ -96,6 +96,6 @@ def _render_rsi_backtest(df, inputs):
             st.error("RSI backtest failed. Not enough data or invalid symbol/date range.")
         else:
             st.success(f"Final Portfolio Value: ${final_value:,.2f}")
-            st.plotly_chart(fig, width="stretch")
+            st.plotly_chart(fig, use_container_width=True)
             st.subheader("Trade Log")
-            st.dataframe(log_df, width="stretch")
+            st.dataframe(log_df, use_container_width=True)

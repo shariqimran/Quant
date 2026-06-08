@@ -8,7 +8,7 @@ from src.quant_research.options.pricing import (
     calculate_monte_carlo_option,
     calculate_binomial_option,
     calculate_black_scholes,
-    implied_volatility_from_binomial_price,
+    calculate_black_scholes_breakdown,
     years_from_days,
 )
 
@@ -20,6 +20,6 @@ __all__ = [
     "calculate_monte_carlo_option",
     "calculate_binomial_option",
     "calculate_black_scholes",
-    "implied_volatility_from_binomial_price",
+    "calculate_black_scholes_breakdown",
     "years_from_days",
 ]
