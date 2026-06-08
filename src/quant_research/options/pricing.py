@@ -1,7 +1,14 @@
-"""Black-Scholes pricing for European options."""
+"""Option pricing models used by the Streamlit calculators.
+
+The Streamlit pages should stay mostly concerned with input/output rendering.
+Keeping the pricing formulas in this module makes the math testable without a
+browser session and reduces the chance that UI changes silently alter results.
+"""
 
 from dataclasses import dataclass
 from math import erf, exp, log, pi, sqrt
+
+import numpy as np
 
 
 TRADING_DAYS_PER_YEAR = 252
@@ -30,6 +37,59 @@ class BlackScholesResult:
     d2: float | None
 
 
+@dataclass(frozen=True)
+class BinomialInputs:
+    """Validated inputs used by the Cox-Ross-Rubinstein binomial model."""
+
+    spot: float
+    strike: float
+    time_to_expiry: float
+    volatility: float
+    risk_free_rate: float
+    dividend_yield: float
+    steps: int
+    option_type: str
+    exercise_style: str
+
+
+@dataclass(frozen=True)
+class BinomialResult:
+    """Price, Greeks, and tree diagnostics from the binomial model."""
+
+    price: float
+    delta: float
+    gamma: float
+    theta: float
+    vega: float
+    rho: float
+    intrinsic: float
+    time_value: float
+    early_exercise_premium: float
+    up_factor: float
+    down_factor: float
+    risk_neutral_probability: float
+    discount_factor: float
+    dt: float
+    steps: int
+    option_type: str
+    exercise_style: str
+    stock_tree_preview: list[list[float]]
+    option_tree_preview: list[list[float]]
+
+
+@dataclass(frozen=True)
+class MonteCarloResult:
+    """European risk-neutral simulation result."""
+
+    price: float
+    standard_error: float
+    confidence_low: float
+    confidence_high: float
+    paths: int
+    seed: int
+    option_type: str
+
+
 def _norm_cdf(value):
     """Standard normal cumulative distribution function."""
     return 0.5 * (1.0 + erf(value / sqrt(2.0)))
@@ -56,6 +116,49 @@ def _validate_inputs(spot, strike, time_to_expiry, volatility):
         raise ValueError("time_to_expiry cannot be negative.")
     if volatility < 0:
         raise ValueError("volatility cannot be negative.")
+
+
+def _validate_binomial_inputs(
+    spot,
+    strike,
+    time_to_expiry,
+    volatility,
+    risk_free_rate,
+    dividend_yield,
+    steps,
+    option_type,
+    exercise_style,
+):
+    """Normalize and validate user/model inputs before building the tree."""
+    spot = float(spot)
+    strike = float(strike)
+    time_to_expiry = float(time_to_expiry)
+    volatility = float(volatility)
+    risk_free_rate = float(risk_free_rate)
+    dividend_yield = float(dividend_yield)
+    steps = int(steps)
+    option_type = str(option_type).strip().lower()
+    exercise_style = str(exercise_style).strip().lower()
+
+    _validate_inputs(spot, strike, time_to_expiry, volatility)
+    if steps < 1:
+        raise ValueError("steps must be at least 1.")
+    if option_type not in {"call", "put"}:
+        raise ValueError("option_type must be 'call' or 'put'.")
+    if exercise_style not in {"european", "american"}:
+        raise ValueError("exercise_style must be 'european' or 'american'.")
+
+    return BinomialInputs(
+        spot=spot,
+        strike=strike,
+        time_to_expiry=time_to_expiry,
+        volatility=volatility,
+        risk_free_rate=risk_free_rate,
+        dividend_yield=dividend_yield,
+        steps=steps,
+        option_type=option_type,
+        exercise_style=exercise_style,
+    )
 
 
 def _deterministic_value(spot, strike, time_to_expiry, risk_free_rate, dividend_yield):
