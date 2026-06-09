@@ -11,18 +11,16 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from src.quant_research.apps.streamlit.pages.black_scholes import (
-    _days_to_expiration,
-    _fetch_expirations,
-    _fetch_live_quote,
-    _fetch_option_chain,
     _format_money,
-    _format_number,
     _format_percent,
-    _market_mid,
-    _nearest_index,
     _render_quote_strip,
     _safe_float,
-    _selected_contract_row,
+)
+from src.quant_research.apps.streamlit.services.options_data import (
+    clear_options_cache,
+    fetch_expirations,
+    fetch_live_quote,
+    fetch_option_chain_cached,
 )
 from src.quant_research.options import (
     calculate_binomial_option,
@@ -31,12 +29,50 @@ from src.quant_research.options import (
     implied_volatility_from_binomial_price,
     years_from_days,
 )
+from src.quant_research.options.chain import contract_midpoint, days_to_expiration, normalize_implied_volatility
 
 
 DEFAULT_RATE = 0.045
 DEFAULT_VOLATILITY = 0.25
 DEFAULT_STEPS = 250
 DEFAULT_SIMULATION_PATHS = 20000
+
+
+def _format_number(value, decimals=4):
+    value = _safe_float(value)
+    if value is None:
+        return "-"
+    return f"{value:,.{decimals}f}"
+
+
+def _fetch_option_chain(symbol, expiration):
+    return fetch_option_chain_cached(symbol, expiration)
+
+
+def _nearest_index(values, target):
+    if not values:
+        return 0
+    target = _safe_float(target) or values[0]
+    distances = [abs(value - target) for value in values]
+    return distances.index(min(distances))
+
+
+def _selected_contract_row(chain_df, strike):
+    if chain_df is None or chain_df.empty or "strike" not in chain_df.columns:
+        return None
+    distances = (chain_df["strike"] - strike).abs()
+    return chain_df.loc[distances.idxmin()]
+
+
+def _market_mid(row):
+    if row is None:
+        return None
+    bid = _safe_float(row.get("bid"))
+    ask = _safe_float(row.get("ask"))
+    midpoint = contract_midpoint(bid, ask)
+    if midpoint is not None:
+        return midpoint
+    return _safe_float(row.get("lastPrice"))
 
 
 def _load_binomial_css():
@@ -248,7 +284,7 @@ def _render_result_metrics(result, currency, market_mid, bs_price, external_pric
     )
     st.dataframe(
         rows,
-        width="stretch",
+        use_container_width=True,
         hide_index=True,
         column_config={"Value": st.column_config.NumberColumn(format="%.6f")},
     )
@@ -285,12 +321,15 @@ def _render_tree_diagnostics(result):
 
     graph_tab, table_tab = st.tabs(["Visual Tree", "Node Table"])
     with graph_tab:
-        st.plotly_chart(_build_tree_graph(result.stock_tree_preview, result.option_tree_preview), width="stretch")
+        st.plotly_chart(
+            _build_tree_graph(result.stock_tree_preview, result.option_tree_preview),
+            use_container_width=True,
+        )
     with table_tab:
         preview = _build_tree_preview(result.stock_tree_preview, result.option_tree_preview)
         st.dataframe(
             preview,
-            width="stretch",
+            use_container_width=True,
             hide_index=True,
             column_config={
                 "Stock Price": st.column_config.NumberColumn(format="$%.4f"),
@@ -412,9 +451,7 @@ def render_binomial_page(inputs):
         st.write("")
         st.write("")
         if st.button("Refresh market data", width="stretch", key="binomial_refresh"):
-            _fetch_live_quote.clear()
-            _fetch_expirations.clear()
-            _fetch_option_chain.clear()
+            clear_options_cache()
             st.rerun()
 
     if not symbol:
@@ -422,8 +459,8 @@ def render_binomial_page(inputs):
         return
 
     try:
-        quote = _fetch_live_quote(symbol)
-        expirations = _fetch_expirations(symbol)
+        quote = fetch_live_quote(symbol)
+        expirations = fetch_expirations(symbol)
     except Exception as exc:
         st.error(f"Unable to load Yahoo Finance data for {symbol}: {exc}")
         quote = {"price": None, "currency": "USD"}
@@ -500,7 +537,7 @@ def render_binomial_page(inputs):
                     key="binomial_manual_strike",
                 )
 
-            days_default = _days_to_expiration(selected_expiration) if selected_expiration else 30
+            days_default = days_to_expiration(selected_expiration) if selected_expiration else 30
             days_to_expiry = st.number_input(
                 "Days until expiration",
                 min_value=0,
@@ -510,7 +547,7 @@ def render_binomial_page(inputs):
             )
 
             if selected_row is not None:
-                selected_iv = _safe_float(selected_row.get("impliedVolatility"))
+                selected_iv = normalize_implied_volatility(_safe_float(selected_row.get("impliedVolatility")))
                 _render_market_contract_snapshot(selected_row, currency)
             elif expirations:
                 st.info("No usable strikes were returned for this option chain.")
@@ -600,7 +637,11 @@ def render_binomial_page(inputs):
     )
     bs_price = _selected_black_scholes_price(bs_result, option_type)
     market_mid = _market_mid(selected_row)
-    chain_iv = _safe_float(selected_row.get("impliedVolatility")) if selected_row is not None else None
+    chain_iv = (
+        normalize_implied_volatility(_safe_float(selected_row.get("impliedVolatility")))
+        if selected_row is not None
+        else None
+    )
     selected_iv = volatility_pct / 100
     model_iv = None
     if market_mid is not None:
