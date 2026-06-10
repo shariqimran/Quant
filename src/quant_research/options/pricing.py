@@ -416,6 +416,7 @@ def calculate_black_scholes_breakdown(
         call_term_spot=call_term_spot,
         call_term_strike=call_term_strike,
         put_term_strike=put_term_strike,
+        put_term_spot=put_term_spot,
         result=result,
     )
 
