@@ -5,9 +5,17 @@ import streamlit as st
 
 def render_header():
     """Render the app header."""
-    st.markdown('<h1 class="main-header">Quant Research Workbench</h1>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="app-subtitle">Market data, indicators, and strategy experiments in one research view.</div>',
+        """
+        <section class="brand-header">
+            <div class="brand-mark">
+                <span class="brand-dot"></span>
+                <span class="brand-chip">Quant Research</span>
+            </div>
+            <h1 class="main-header">Research Workbench</h1>
+            <div class="app-subtitle">Market data, options models, and strategy experiments in one focused workspace.</div>
+        </section>
+        """,
         unsafe_allow_html=True,
     )
 
@@ -55,4 +63,3 @@ def render_welcome_message():
     with col3:
         st.markdown("**Crypto**")
         st.write("BTC-USD, ETH-USD")
-

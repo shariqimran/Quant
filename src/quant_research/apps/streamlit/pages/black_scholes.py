@@ -189,8 +189,6 @@ def _render_strike_chain_chart(contracts: list[ListedOptionContract], spot: floa
         legend={"orientation": "h", "y": 1.12},
         xaxis={"title": "Strike", "gridcolor": "rgba(148,163,184,0.12)"},
         yaxis={"title": "Midpoint ($)", "gridcolor": "rgba(148,163,184,0.12)"},
-        font={"color": "#cbd5e1", "size": 12},
-        title_font={"color": "#f8fafc", "size": 14},
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -689,7 +687,8 @@ def _build_payoff_chart(spot, strike, premium, option_side):
         margin={"l": 8, "r": 8, "t": 20, "b": 8},
         xaxis_title="Underlying at expiration",
         yaxis_title="P&L",
-        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return fig
 

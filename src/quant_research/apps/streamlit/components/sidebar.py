@@ -17,10 +17,35 @@ PAGE_OPTIONS = [
 ]
 
 
+def _sync_page_from_query():
+    page = st.query_params.get("page")
+    if page in PAGE_OPTIONS:
+        st.session_state.page = page
+
+
+def _set_current_page(page):
+    st.session_state.page = page
+    st.query_params["page"] = page
+    st.rerun()
+
+
 def render_sidebar_inputs():
     """Render sidebar controls and return validated app inputs."""
+    _sync_page_from_query()
+
     with st.sidebar:
-        st.title("Quant Research")
+        st.markdown(
+            """
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-mark">
+                    <span></span>
+                    <strong>Quant Research</strong>
+                </div>
+                <p>Models, signals, and market context</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         st.caption("Navigation")
         page = st.session_state.get("page", "Home")
         if page not in PAGE_OPTIONS:
@@ -35,11 +60,8 @@ def render_sidebar_inputs():
                 width="stretch",
             ):
                 if st.session_state.get("page") != option:
-                    st.session_state.page = option
-                    st.rerun()
+                    _set_current_page(option)
                 page = option
-
-        st.divider()
 
         interval_options = {
             "1 day": "1d",
@@ -80,10 +102,36 @@ def render_sidebar_inputs():
             st.session_state.fetch_data = False
 
         st.divider()
+
+        with st.expander("Settings", expanded=False):
+            st.caption("Appearance")
+            theme_mode = st.selectbox(
+                "Theme",
+                ["System", "Dark", "Light"],
+                key="theme_mode",
+                help="Choose app appearance without relying on browser defaults.",
+            )
+            accent_mode = st.selectbox(
+                "Accent",
+                ["Sky", "Teal", "Violet"],
+                key="accent_mode",
+                help="Adjust the highlight color used across navigation and cards.",
+            )
+            motion_enabled = st.toggle(
+                "Motion effects",
+                key="motion_enabled",
+                value=st.session_state.get("motion_enabled", True),
+                help="Enable subtle animated emphasis across the interface.",
+            )
+
+        st.divider()
         st.caption("Current scope: educational research backtests, not live trading.")
 
     return {
         "page": page,
+        "theme_mode": theme_mode,
+        "accent_mode": accent_mode,
+        "motion_enabled": motion_enabled,
         "symbol": symbol,
         "interval": interval,
         "interval_display": interval_display,

@@ -31,10 +31,13 @@ def main():
     """Run the Streamlit app."""
     suppress_warnings()
     setup_page_config()
-    load_custom_css()
-    render_header()
-
     inputs = render_sidebar_inputs()
+    load_custom_css(
+        theme_mode=inputs["theme_mode"],
+        accent_mode=inputs["accent_mode"],
+        motion_enabled=inputs["motion_enabled"],
+    )
+    render_header()
 
     df = None
     if st.session_state.get("fetch_data") and inputs["is_valid"]:
