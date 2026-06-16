@@ -187,8 +187,8 @@ def _build_tree_graph(stock_tree, option_tree):
             marker={
                 "size": 18,
                 "color": node_color,
-                "colorscale": [[0, "#0f172a"], [0.5, "#51d7ff"], [1, "#2fffb2"]],
-                "line": {"color": "rgba(248, 250, 252, 0.85)", "width": 1},
+                "colorscale": [[0, "#cbd5e1"], [0.5, "#38bdf8"], [1, "#14b8a6"]],
+                "line": {"color": "rgba(15, 23, 42, 0.28)", "width": 1},
                 "colorbar": {"title": "Option"},
             },
             text=node_text,
@@ -200,7 +200,7 @@ def _build_tree_graph(stock_tree, option_tree):
         height=460,
         margin={"l": 10, "r": 10, "t": 18, "b": 10},
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(5, 12, 24, 0.45)",
+        plot_bgcolor="rgba(0,0,0,0)",
         xaxis={"title": "Step", "gridcolor": "rgba(148, 163, 184, 0.12)", "dtick": 1},
         yaxis={"title": "Branch", "gridcolor": "rgba(148, 163, 184, 0.08)", "zeroline": False, "showticklabels": False},
     )

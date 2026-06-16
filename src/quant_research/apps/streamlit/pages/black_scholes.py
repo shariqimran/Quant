@@ -51,11 +51,61 @@ def _format_money(value, currency="USD"):
     return f"{currency} {value:,.4f}"
 
 
+def _format_number(value, decimals=2):
+    value = _safe_float(value)
+    if value is None:
+        return "-"
+    return f"{value:,.{decimals}f}"
+
+
 def _format_percent(value, decimals=2):
     value = _safe_float(value)
     if value is None:
         return "-"
     return f"{value * 100:,.{decimals}f}%"
+
+
+def _fetch_live_quote(symbol):
+    return fetch_live_quote(symbol)
+
+
+def _fetch_expirations(symbol):
+    return fetch_expirations(symbol)
+
+
+def _fetch_option_chain(symbol, expiration):
+    return fetch_option_chain_cached(symbol, expiration)
+
+
+def _days_to_expiration(expiration):
+    expiry_date = datetime.strptime(expiration, "%Y-%m-%d").date()
+    return max((expiry_date - date.today()).days, 0)
+
+
+def _nearest_index(values, target):
+    if not values:
+        return 0
+    target = _safe_float(target) or values[0]
+    distances = [abs(value - target) for value in values]
+    return distances.index(min(distances))
+
+
+def _selected_contract_row(chain_df, strike):
+    if chain_df is None or chain_df.empty or "strike" not in chain_df.columns:
+        return None
+    distances = (chain_df["strike"] - strike).abs()
+    return chain_df.loc[distances.idxmin()]
+
+
+def _market_mid(row):
+    if row is None:
+        return None
+    bid = _safe_float(row.get("bid"))
+    ask = _safe_float(row.get("ask"))
+    last = _safe_float(row.get("lastPrice"))
+    if bid is not None and ask is not None and bid > 0 and ask > 0:
+        return (bid + ask) / 2
+    return last
 
 
 def _render_quote_strip(quote, symbol):
@@ -139,8 +189,6 @@ def _render_strike_chain_chart(contracts: list[ListedOptionContract], spot: floa
         legend={"orientation": "h", "y": 1.12},
         xaxis={"title": "Strike", "gridcolor": "rgba(148,163,184,0.12)"},
         yaxis={"title": "Midpoint ($)", "gridcolor": "rgba(148,163,184,0.12)"},
-        font={"color": "#cbd5e1", "size": 12},
-        title_font={"color": "#f8fafc", "size": 14},
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -639,7 +687,8 @@ def _build_payoff_chart(spot, strike, premium, option_side):
         margin={"l": 8, "r": 8, "t": 20, "b": 8},
         xaxis_title="Underlying at expiration",
         yaxis_title="P&L",
-        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return fig
 

@@ -32,8 +32,6 @@ def _render_home_price_chart(df, symbol):
         hovermode="x unified",
         xaxis=dict(showgrid=False),
         yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.18)"),
-        font=dict(size=12, color="#cbd5e1"),
-        title_font=dict(color="#f8fafc", size=15),
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -92,32 +90,30 @@ def render_home_page(df, inputs, has_data):
                 </div>
             </div>
         </section>
-        <section class="qa-story-panel">
-            <div>
+        <section class="qa-story-section">
+            <div class="qa-story-panel">
+                <div>
                 <span class="qa-section-kicker">Why it exists</span>
                 <h2>Trading research gets fragmented fast.</h2>
+                </div>
+                <p>
+                    Analysts often jump between market data, indicators, spreadsheets, news, social context,
+                    and portfolio performance views. QuantAlgo consolidates that exploratory loop into one
+                    dashboard built for fast iteration and clear decision support.
+                </p>
             </div>
-            <p>
-                Analysts often jump between market data, indicators, spreadsheets, news, social context,
-                and portfolio performance views. QuantAlgo consolidates that exploratory loop into one
-                dashboard built for fast iteration and clear decision support.
-            </p>
         </section>
         <section class="qa-feature-section">
             <span class="qa-section-kicker">Core system</span>
-            <h2>From ticker idea to strategy readout.</h2>
+            <h2>Navigate directly into the active research modules.</h2>
             <div class="qa-feature-grid">
-                <article><span>01</span><h3>Market data</h3><p>Configurable assets and intervals through Yahoo Finance.</p></article>
-                <article><span>02</span><h3>Technical strategies</h3><p>Moving averages, RSI mean reversion, and volatility views.</p></article>
-                <article><span>03</span><h3>Backtesting engine</h3><p>Entries, exits, PnL, win rate, and drawdown metrics.</p></article>
-                <article><span>04</span><h3>Portfolio metrics</h3><p>Performance and risk summaries for clearer comparison.</p></article>
-                <article><span>05</span><h3>Sentiment analysis</h3><p>Reddit and Google News context scored with VADER.</p></article>
-                <article><span>06</span><h3>Interactive visuals</h3><p>Plotly-style charts for trend, volatility, and trade markers.</p></article>
+                <a class="qa-feature-link" href="?page=Market+Data" target="_self"><article><span>01</span><h3>Market data</h3><p>Price history, volume, duplicate timestamps, and missing-value checks.</p></article></a>
+                <a class="qa-feature-link" href="?page=Strategy+Lab" target="_self"><article><span>02</span><h3>Strategy lab</h3><p>Moving-average and RSI experiments with parameter controls and backtest output.</p></article></a>
+                <a class="qa-feature-link" href="?page=Risk+%26+Metrics" target="_self"><article><span>03</span><h3>Risk &amp; metrics</h3><p>Returns, volatility, Sharpe ratio, drawdown, and market regime context.</p></article></a>
+                <a class="qa-feature-link" href="?page=Black-Scholes" target="_self"><article><span>04</span><h3>Black-Scholes</h3><p>Option valuation, Greeks, live contract lookup, and pricing breakdowns.</p></article></a>
+                <a class="qa-feature-link" href="?page=Binomial" target="_self"><article><span>05</span><h3>Binomial model</h3><p>Tree-based option pricing with step controls, Greeks, and exercise analysis.</p></article></a>
+                <a class="qa-feature-link" href="?page=Sentiment" target="_self"><article><span>06</span><h3>Sentiment analysis</h3><p>Reddit and Google News context scored with VADER for market tone.</p></article></a>
             </div>
-        </section>
-        <section class="qa-workflow">
-            <span class="qa-section-kicker">Workflow</span>
-            <h2>Select asset → Configure strategy → Backtest → Analyze performance → Compare sentiment.</h2>
         </section>
         """,
         unsafe_allow_html=True,
@@ -171,52 +167,3 @@ def render_home_page(df, inputs, has_data):
         """,
             unsafe_allow_html=True,
         )
-
-    st.markdown('<div class="section-label">Research Modules</div>', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown(
-            """
-        <div class="dashboard-card">
-            <h4>Market Data</h4>
-            <p>Price, volume, rows, duplicate timestamps, and missing-value checks.</p>
-            <span class="module-tag">Inspect</span>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
-    with col2:
-        st.markdown(
-            """
-        <div class="dashboard-card">
-            <h4>Strategy Lab</h4>
-            <p>Moving-average and RSI experiments with explicit parameters.</p>
-            <span class="module-tag">Experiment</span>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
-    with col3:
-        st.markdown(
-            """
-        <div class="dashboard-card">
-            <h4>Risk & Metrics</h4>
-            <p>Volatility, return stats, Sharpe ratio, regimes, and drawdown context.</p>
-            <span class="module-tag">Evaluate</span>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
-
-    st.markdown('<div class="section-label">Workflow</div>', unsafe_allow_html=True)
-    st.markdown(
-        """
-    <div class="workflow-strip">
-        <div class="workflow-step"><span class="workflow-index">1</span>Load data</div>
-        <div class="workflow-step"><span class="workflow-index">2</span>Inspect price and data quality</div>
-        <div class="workflow-step"><span class="workflow-index">3</span>Run a strategy experiment</div>
-        <div class="workflow-step"><span class="workflow-index">4</span>Evaluate risk and benchmark behavior</div>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )

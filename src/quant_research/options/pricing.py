@@ -436,10 +436,7 @@ def _preview_tree(levels, max_levels=6):
 def _build_stock_tree(spot, up_factor, down_factor, steps):
     """Build a recombining stock-price tree."""
     return [
-        [
-            spot * (up_factor**up_moves) * (down_factor ** (step - up_moves))
-            for up_moves in range(step + 1)
-        ]
+        [spot * (up_factor**up_moves) * (down_factor ** (step - up_moves)) for up_moves in range(step + 1)]
         for step in range(steps + 1)
     ]
 
@@ -505,9 +502,7 @@ def _calculate_binomial_price_only(inputs, return_tree=False):
                 + (1.0 - risk_neutral_probability) * option_values[node]
             )
             exercise = _payoff(stock_tree[step][node], strike, option_type)
-            next_values.append(
-                max(exercise, continuation) if exercise_style == "american" else continuation
-            )
+            next_values.append(max(exercise, continuation) if exercise_style == "american" else continuation)
         option_values = next_values
         option_tree[step] = option_values[:]
 
@@ -518,11 +513,7 @@ def _calculate_binomial_price_only(inputs, return_tree=False):
 def _finite_difference_greek(inputs, field, bump):
     """Central finite difference for Greeks that are not directly available."""
     base_value = getattr(inputs, field)
-    down_value = (
-        max(base_value - bump, 0.0)
-        if field in {"spot", "volatility", "time_to_expiry"}
-        else base_value - bump
-    )
+    down_value = max(base_value - bump, 0.0) if field in {"spot", "volatility", "time_to_expiry"} else base_value - bump
     up_inputs = inputs.__class__(**{**inputs.__dict__, field: base_value + bump})
     down_inputs = inputs.__class__(**{**inputs.__dict__, field: down_value})
     up_price = _calculate_binomial_price_only(up_inputs)
@@ -537,9 +528,7 @@ def _calculate_binomial_delta_gamma(inputs, stock_tree, option_tree):
         stock_bump = max(inputs.spot * 0.01, 0.01)
         delta = _finite_difference_greek(inputs, "spot", stock_bump)
         up_inputs = inputs.__class__(**{**inputs.__dict__, "spot": inputs.spot + stock_bump})
-        down_inputs = inputs.__class__(
-            **{**inputs.__dict__, "spot": max(inputs.spot - stock_bump, 0.01)}
-        )
+        down_inputs = inputs.__class__(**{**inputs.__dict__, "spot": max(inputs.spot - stock_bump, 0.01)})
         up_delta = _finite_difference_greek(up_inputs, "spot", stock_bump)
         down_delta = _finite_difference_greek(down_inputs, "spot", stock_bump)
         return delta, (up_delta - down_delta) / (2 * stock_bump)
@@ -602,9 +591,7 @@ def calculate_binomial_option(
     rho = _finite_difference_greek(inputs, "risk_free_rate", rate_bump) / 100.0
 
     if inputs.time_to_expiry > day_bump:
-        shorter_inputs = inputs.__class__(
-            **{**inputs.__dict__, "time_to_expiry": inputs.time_to_expiry - day_bump}
-        )
+        shorter_inputs = inputs.__class__(**{**inputs.__dict__, "time_to_expiry": inputs.time_to_expiry - day_bump})
         theta = _calculate_binomial_price_only(shorter_inputs) - price
     else:
         theta = intrinsic - price
@@ -684,7 +671,6 @@ def implied_volatility_from_binomial_price(
 
     if low_price is None or high_price is None:
         return None
-
     if target_price < low_price - tolerance or target_price > high_price + tolerance:
         return None
 
