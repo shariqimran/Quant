@@ -47,15 +47,15 @@ def render_mocked_binomial_page():
     }
     with (
         patch(
-            "src.quant_research.apps.streamlit.pages.binomial._fetch_live_quote",
+            "src.quant_research.apps.streamlit.pages.binomial.fetch_live_quote",
             return_value=quote,
         ),
         patch(
-            "src.quant_research.apps.streamlit.pages.binomial._fetch_expirations",
+            "src.quant_research.apps.streamlit.pages.binomial.fetch_expirations",
             return_value=[expiration],
         ),
         patch(
-            "src.quant_research.apps.streamlit.pages.binomial._fetch_option_chain",
+            "src.quant_research.apps.streamlit.pages.binomial.fetch_option_chain_cached",
             return_value=(calls, puts),
         ),
     ):
