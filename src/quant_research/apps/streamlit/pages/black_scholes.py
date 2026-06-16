@@ -51,11 +51,61 @@ def _format_money(value, currency="USD"):
     return f"{currency} {value:,.4f}"
 
 
+def _format_number(value, decimals=2):
+    value = _safe_float(value)
+    if value is None:
+        return "-"
+    return f"{value:,.{decimals}f}"
+
+
 def _format_percent(value, decimals=2):
     value = _safe_float(value)
     if value is None:
         return "-"
     return f"{value * 100:,.{decimals}f}%"
+
+
+def _fetch_live_quote(symbol):
+    return fetch_live_quote(symbol)
+
+
+def _fetch_expirations(symbol):
+    return fetch_expirations(symbol)
+
+
+def _fetch_option_chain(symbol, expiration):
+    return fetch_option_chain_cached(symbol, expiration)
+
+
+def _days_to_expiration(expiration):
+    expiry_date = datetime.strptime(expiration, "%Y-%m-%d").date()
+    return max((expiry_date - date.today()).days, 0)
+
+
+def _nearest_index(values, target):
+    if not values:
+        return 0
+    target = _safe_float(target) or values[0]
+    distances = [abs(value - target) for value in values]
+    return distances.index(min(distances))
+
+
+def _selected_contract_row(chain_df, strike):
+    if chain_df is None or chain_df.empty or "strike" not in chain_df.columns:
+        return None
+    distances = (chain_df["strike"] - strike).abs()
+    return chain_df.loc[distances.idxmin()]
+
+
+def _market_mid(row):
+    if row is None:
+        return None
+    bid = _safe_float(row.get("bid"))
+    ask = _safe_float(row.get("ask"))
+    last = _safe_float(row.get("lastPrice"))
+    if bid is not None and ask is not None and bid > 0 and ask > 0:
+        return (bid + ask) / 2
+    return last
 
 
 def _render_quote_strip(quote, symbol):

@@ -18,6 +18,19 @@ def load_custom_css():
     st.markdown(
         """
     <style>
+        :root {
+            font-size: 14px !important;
+        }
+        html,
+        body,
+        [data-testid="stAppViewContainer"],
+        .stApp,
+        button,
+        input,
+        textarea,
+        select {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+        }
         header[data-testid="stHeader"] {
             background: transparent;
         }
@@ -28,12 +41,87 @@ def load_custom_css():
             padding-top: 1.6rem;
             padding-bottom: 3rem;
             max-width: 1180px;
+            width: min(1180px, calc(100vw - 3rem));
         }
         .stApp {
             background:
                 radial-gradient(circle at 78% 12%, rgba(47, 255, 178, 0.10), transparent 34rem),
                 radial-gradient(circle at 18% 38%, rgba(81, 215, 255, 0.09), transparent 30rem),
                 linear-gradient(135deg, #030711 0%, #07101f 48%, #02040b 100%);
+        }
+        .stMarkdown,
+        .stMarkdown p,
+        .stCaption,
+        label,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            overflow-wrap: anywhere;
+            word-break: normal;
+        }
+        .stMarkdown p,
+        .stCaption,
+        label,
+        div[data-testid="stMetricLabel"] p,
+        div[data-testid="stMetricValue"] p,
+        div[data-testid="stMetricDelta"] p,
+        .stSelectbox label,
+        .stTextInput label,
+        .stNumberInput label,
+        .stDateInput label,
+        .stCheckbox label,
+        .stRadio label {
+            font-size: 0.92rem !important;
+        }
+        h1, .stMarkdown h1 {
+            font-size: clamp(1.8rem, 1.2rem + 2vw, 2.7rem) !important;
+            line-height: 1.1 !important;
+        }
+        h2, .stMarkdown h2 {
+            font-size: clamp(1.35rem, 1rem + 1.4vw, 1.95rem) !important;
+            line-height: 1.15 !important;
+        }
+        h3, .stMarkdown h3 {
+            font-size: clamp(1.1rem, 0.95rem + 0.8vw, 1.4rem) !important;
+            line-height: 1.2 !important;
+        }
+        h4, .stMarkdown h4 {
+            font-size: 1rem !important;
+            line-height: 1.25 !important;
+        }
+        .stMarkdown p,
+        .stCaption,
+        div[data-testid="stMetricLabel"],
+        div[data-testid="stMetricValue"],
+        div[data-testid="stMetricDelta"],
+        [data-testid="stDataFrame"] table,
+        [data-testid="stDataFrame"] div {
+            min-width: 0;
+        }
+        div[data-testid="stMetricLabel"] p,
+        div[data-testid="stMetricValue"] p,
+        div[data-testid="stMetricDelta"] p {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+        div[data-testid="stMetricValue"] {
+            max-width: 100%;
+        }
+        div[data-testid="stMetricValue"] > div,
+        div[data-testid="stMetricLabel"] > div {
+            width: 100%;
+        }
+        [data-testid="column"] {
+            min-width: 0;
+        }
+        [data-testid="column"] .stMarkdown,
+        [data-testid="column"] .stCaption,
+        [data-testid="column"] div[data-testid="stMetric"] {
+            min-width: 0;
         }
         section[data-testid="stSidebar"] {
             border-right: 1px solid rgba(148, 163, 184, 0.18);
@@ -48,17 +136,69 @@ def load_custom_css():
             margin-bottom: 0.35rem;
             color: #f8fafc;
         }
+        section[data-testid="stSidebar"] .stCaption {
+            color: #7dd3fc;
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08rem;
+            font-weight: 700;
+        }
+        section[data-testid="stSidebar"] button[kind="secondary"],
+        section[data-testid="stSidebar"] button[kind="primary"] {
+            min-height: 2.65rem;
+            justify-content: flex-start;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            box-shadow: none;
+        }
+        section[data-testid="stSidebar"] button[kind="secondary"] {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #aebdcd;
+        }
+        section[data-testid="stSidebar"] button[kind="secondary"]:hover,
+        section[data-testid="stSidebar"] button[kind="secondary"]:focus-visible {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: transparent;
+        }
+        section[data-testid="stSidebar"] button[kind="primary"] {
+            background: rgba(81, 215, 255, 0.12);
+            border: 1px solid transparent;
+            color: #7ee7ff;
+        }
+        section[data-testid="stSidebar"] button[kind="primary"]:hover,
+        section[data-testid="stSidebar"] button[kind="primary"]:focus-visible {
+            background: rgba(81, 215, 255, 0.16);
+            border-color: transparent;
+        }
+        section[data-testid="stSidebar"] button[kind="secondary"] > div,
+        section[data-testid="stSidebar"] button[kind="primary"] > div,
+        section[data-testid="stSidebar"] button[kind="secondary"] span,
+        section[data-testid="stSidebar"] button[kind="primary"] span {
+            width: auto;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: left;
+        }
+        section[data-testid="stSidebar"] button[kind="primary"] > div,
+        section[data-testid="stSidebar"] button[kind="primary"] span {
+            color: #7ee7ff;
+        }
         .main-header {
-            font-size: 1.58rem;
+            font-size: clamp(1.2rem, 1rem + 1vw, 1.58rem);
             font-weight: 750;
             color: #f8fafc;
             margin-bottom: 0.05rem;
             letter-spacing: 0;
+            line-height: 1.15;
         }
         .app-subtitle {
             color: #94a3b8;
-            font-size: 0.92rem;
+            font-size: clamp(0.85rem, 0.8rem + 0.25vw, 0.92rem);
             margin-bottom: 1.25rem;
+            line-height: 1.45;
         }
         .qa-landing-hero {
             min-height: 620px;
@@ -107,8 +247,8 @@ def load_custom_css():
         }
         .qa-landing-hero h1 {
             color: #eef7ff;
-            font-size: clamp(3rem, 6.4vw, 6.2rem);
-            line-height: 0.92;
+            font-size: clamp(2.1rem, 1.4rem + 3vw, 3.8rem) !important;
+            line-height: 1.02 !important;
             letter-spacing: 0;
             margin: 0 0 1.25rem;
         }
@@ -120,7 +260,7 @@ def load_custom_css():
             line-height: 1.68;
         }
         .qa-landing-hero p {
-            font-size: 1.06rem;
+            font-size: 0.96rem !important;
             max-width: 42rem;
             margin-bottom: 1.55rem;
         }
@@ -316,13 +456,13 @@ def load_custom_css():
         .qa-story-panel h2,
         .qa-feature-section h2 {
             color: #eef7ff;
-            font-size: clamp(2rem, 4vw, 4.1rem);
-            line-height: 1;
+            font-size: clamp(1.55rem, 1.1rem + 2vw, 2.7rem) !important;
+            line-height: 1.08 !important;
             margin: 0;
         }
         .qa-story-panel p {
             margin: 0;
-            font-size: 1rem;
+            font-size: 0.94rem !important;
         }
         .qa-feature-section {
             margin-bottom: 3rem;
@@ -376,7 +516,7 @@ def load_custom_css():
         }
         .qa-workflow h2 {
             color: #eef7ff;
-            font-size: clamp(1.4rem, 3vw, 2.25rem);
+            font-size: clamp(1.2rem, 1rem + 1vw, 1.75rem) !important;
             line-height: 1.18;
             margin: 0;
             max-width: 60rem;
@@ -413,7 +553,7 @@ def load_custom_css():
         }
         .hero-title {
             color: #f8fafc;
-            font-size: 1.9rem;
+            font-size: clamp(1.35rem, 1rem + 1.3vw, 1.9rem);
             font-weight: 760;
             margin: 0;
             letter-spacing: 0;
@@ -421,7 +561,7 @@ def load_custom_css():
         }
         .hero-subtitle {
             color: #cbd5e1;
-            font-size: 0.95rem;
+            font-size: 0.9rem !important;
             margin-top: 0.55rem;
             max-width: 780px;
         }
@@ -442,10 +582,11 @@ def load_custom_css():
         }
         .kpi-value {
             color: #f8fafc;
-            font-size: 1.45rem;
+            font-size: clamp(1.1rem, 0.95rem + 0.9vw, 1.45rem);
             font-weight: 760;
             line-height: 1.1;
             margin: 0;
+            overflow-wrap: anywhere;
         }
         .kpi-note {
             color: #94a3b8;
@@ -488,13 +629,13 @@ def load_custom_css():
         }
         .dashboard-card h4 {
             margin: 0 0 0.5rem 0;
-            font-size: 1rem;
+            font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1rem);
             color: #f8fafc;
         }
         .dashboard-card p {
             margin: 0;
             color: #94a3b8;
-            font-size: 0.88rem;
+            font-size: clamp(0.84rem, 0.8rem + 0.2vw, 0.88rem);
             line-height: 1.38;
         }
         .module-tag {
@@ -575,13 +716,13 @@ def load_custom_css():
         .options-chain-header h3 {
             margin: 0;
             color: #f8fafc;
-            font-size: 1.05rem;
+            font-size: 0.98rem !important;
             font-weight: 750;
         }
         .options-chain-header p {
             margin: 0.28rem 0 0;
             color: #94a3b8;
-            font-size: 0.86rem;
+            font-size: 0.82rem !important;
             line-height: 1.45;
             max-width: 42rem;
         }
@@ -612,6 +753,7 @@ def load_custom_css():
             gap: 1px;
             padding-top: 8px;
             padding-bottom: 8px;
+            font-size: 0.9rem !important;
         }
         .stTabs [aria-selected="true"] {
             border-bottom: 2px solid #38bdf8;
@@ -628,6 +770,9 @@ def load_custom_css():
             .qa-feature-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
+            .block-container {
+                width: min(1180px, calc(100vw - 2.2rem));
+            }
         }
         @media (max-width: 680px) {
             .qa-hero-stats,
@@ -639,7 +784,19 @@ def load_custom_css():
                 min-height: auto;
             }
             .qa-landing-hero h1 {
-                font-size: 3rem;
+                font-size: clamp(1.8rem, 9vw, 2.6rem) !important;
+            }
+            .block-container {
+                width: min(1180px, calc(100vw - 1.4rem));
+                padding-top: 1.05rem;
+                padding-bottom: 2rem;
+            }
+            .hero-subtitle,
+            .qa-landing-hero p,
+            .qa-story-panel p,
+            .qa-feature-grid p,
+            .qa-workflow h2 {
+                max-width: 100%;
             }
         }
         @media (prefers-reduced-motion: reduce) {

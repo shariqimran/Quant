@@ -5,27 +5,39 @@ from datetime import datetime, timedelta
 import streamlit as st
 
 
+PAGE_OPTIONS = [
+    "Home",
+    "Market Data",
+    "Strategy Lab",
+    "Risk & Metrics",
+    "Black-Scholes",
+    "Binomial",
+    "Sentiment",
+    "Export",
+]
+
+
 def render_sidebar_inputs():
     """Render sidebar controls and return validated app inputs."""
     with st.sidebar:
         st.title("Quant Research")
+        st.caption("Navigation")
+        page = st.session_state.get("page", "Home")
+        if page not in PAGE_OPTIONS:
+            page = "Home"
+            st.session_state.page = page
 
-        page = st.pills(
-            "Navigation",
-            [
-                "Home",
-                "Market Data",
-                "Strategy Lab",
-                "Risk & Metrics",
-                "Black-Scholes",
-                "Binomial",
-                "Sentiment",
-                "Export",
-            ],
-            default="Home",
-            label_visibility="collapsed",
-            width="stretch",
-        )
+        for option in PAGE_OPTIONS:
+            if st.button(
+                option,
+                key=f"nav_{option.lower().replace(' ', '_').replace('&', 'and').replace('-', '_')}",
+                type="primary" if page == option else "secondary",
+                width="stretch",
+            ):
+                if st.session_state.get("page") != option:
+                    st.session_state.page = option
+                    st.rerun()
+                page = option
 
         st.divider()
 
